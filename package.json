@@ -1,25 +1,51 @@
 {
-    "name": "resume-matcher",
-    "version": "0.0.1",
-    "description": "Veridis Quo.",
-    "private": true,
-    "scripts": {
-        "install:frontend": "cd apps/frontend && npm install",
-        "install:backend": "cd apps/backend && uv venv && uv pip install .",
-        "install": "npm run install:frontend && npm run install:backend",
-        "dev:backend": "cd apps/backend && uv run uvicorn app.main:app --reload --port 8000 --timeout-keep-alive 300 --timeout-graceful-shutdown 300",
-        "dev:frontend": "cd apps/frontend && npm run dev",
-        "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
-        "build:frontend": "cd apps/frontend && npm run build",
-        "build:backend": "cd apps/backend && uv run python -c \"print('Backend build complete')\"",
-        "build": "npm run build:frontend && npm run build:backend",
-        "start:backend": "cd apps/backend && uv run uvicorn app.main:app --port 8000",
-        "start:frontend": "cd apps/frontend && npm start",
-        "start": "concurrently \"npm:start:backend\" \"npm:start:frontend\"",
-        "lint:frontend": "cd apps/frontend && npm run lint",
-        "lint": "npm run lint:frontend"
-    },
-    "devDependencies": {
-        "concurrently": "^9.1.2"
-    }
+  "name": "resume-matcher",
+  "version": "0.0.1",
+  "description": "Veridis Quo.",
+  "private": true,
+  "scripts": {
+    "install:frontend": "cd apps/frontend && bun install",
+    "install:backend": "cd apps/backend && uv sync",
+    "install": "bun run install:frontend && bun run install:backend",
+    "dev:backend": "cd apps/backend && uv run uvicorn app.main:app --reload --port 8000 --timeout-keep-alive 300 --timeout-graceful-shutdown 300",
+    "dev:frontend": "cd apps/frontend && bun run dev",
+    "dev": "concurrently \"bun:dev:backend\" \"bun:dev:frontend\"",
+    "build:frontend": "cd apps/frontend && bun run build",
+    "build:backend": "cd apps/backend && uv run python -c \"print('Backend build complete')\"",
+    "build": "bun run build:frontend && bun run build:backend",
+    "start:backend": "cd apps/backend && uv run uvicorn app.main:app --port 8000",
+    "start:frontend": "cd apps/frontend && bun run start",
+    "start": "concurrently \"bun:start:backend\" \"bun:start:frontend\"",
+    "lint:frontend": "cd apps/frontend && bun run lint",
+    "lint:fix:frontend": "cd apps/frontend && bun run lint:fix",
+    "lint": "bun run lint:frontend",
+    "lint:fix": "bun run lint:fix:frontend",
+    "type-check:frontend": "cd apps/frontend && bun run type-check",
+    "type-check": "bun run type-check:frontend",
+    "format:frontend": "cd apps/frontend && bun run format",
+    "format": "bun run format:frontend",
+    "analyze:frontend": "cd apps/frontend && bun run analyze",
+    "analyze": "bun run analyze:frontend",
+    "test:frontend": "cd apps/frontend && bun run test",
+    "test:backend": "cd apps/backend && uv run python -m pytest",
+    "test": "concurrently \"bun:test:frontend\" \"bun:test:backend\"",
+    "test:watch": "cd apps/frontend && bun run test:watch",
+    "clean": "rm -rf apps/frontend/.next apps/frontend/out apps/frontend/dist node_modules apps/frontend/node_modules apps/backend/.venv",
+    "clean:frontend": "cd apps/frontend && rm -rf .next out dist node_modules",
+    "clean:backend": "cd apps/backend && rm -rf .venv __pycache__ .pytest_cache",
+    "precommit": "bunx lint-staged",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "apps/frontend/**/*.{ts,tsx,js,jsx}": "eslint --fix --cwd apps/frontend"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "concurrently": "^9.1.2",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-tailwindcss": "^3.18.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.3"
+  }
 }
