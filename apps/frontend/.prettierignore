@@ -1,0 +1,29 @@
+# Ignore build outputs
+.next/
+out/
+dist/
+
+# Ignore dependencies
+node_modules/
+.pnpm/
+
+# Ignore test outputs
+coverage/
+.nyc_output/
+
+# Ignore logs
+*.log
+
+# Ignore generated files
+*.d.ts.map
+
+# Ignore lock files
+package-lock.json
+bun.lock
+pnpm-lock.yaml
+
+# Ignore configuration files that should not be formatted
+.env*
+.gitignore
+.prettierignore
+.eslintignore
