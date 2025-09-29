@@ -48,6 +48,15 @@ instance/
 .cursor/
 .cursorrules
 
+# AI Development Tools
+.bmad-core/
+.claude/
+.serena/
+
+# Supabase local development
+supabase/.temp/
+supabase/.branches/
+
 .DS_Store
 
 
