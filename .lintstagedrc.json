@@ -1,0 +1,5 @@
+{
+  "apps/frontend/**/*.{js,jsx,ts,tsx}": ["bunx prettier --write"],
+  "apps/backend/**/*.py": ["bash -c 'cd apps/backend && uv run ruff check --fix --exit-zero && uv run ruff format'"],
+  "*.{json,md,yml,yaml}": ["bunx prettier --write"]
+}
