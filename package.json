@@ -18,10 +18,16 @@
     "start": "concurrently \"bun:start:backend\" \"bun:start:frontend\"",
     "lint:frontend": "cd apps/frontend && bun run lint",
     "lint:fix:frontend": "cd apps/frontend && bun run lint:fix",
-    "lint": "bun run lint:frontend",
-    "lint:fix": "bun run lint:fix:frontend",
+    "lint:backend": "cd apps/backend && uv run ruff check .",
+    "lint:fix:backend": "cd apps/backend && uv run ruff check --fix .",
+    "lint": "bun run lint:frontend && bun run lint:backend",
+    "lint:fix": "bun run lint:fix:frontend && bun run lint:fix:backend",
     "type-check:frontend": "cd apps/frontend && bun run type-check",
-    "type-check": "bun run type-check:frontend",
+    "type-check:backend": "cd apps/backend && uv run pyright",
+    "type-check": "bun run type-check:frontend && bun run type-check:backend",
+    "type-check:errors": "bun run scripts/type-check-errors.js",
+    "type-check:errors:frontend": "bun run scripts/type-check-errors.js frontend",
+    "type-check:errors:backend": "bun run scripts/type-check-errors.js backend",
     "format:frontend": "cd apps/frontend && bun run format",
     "format": "bun run format:frontend",
     "analyze:frontend": "cd apps/frontend && bun run analyze",
@@ -34,10 +40,18 @@
     "clean:frontend": "cd apps/frontend && rm -rf .next out dist node_modules",
     "clean:backend": "cd apps/backend && rm -rf .venv __pycache__ .pytest_cache",
     "precommit": "bunx lint-staged",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "apps/frontend/**/*.{ts,tsx,js,jsx}": "eslint --fix --cwd apps/frontend"
+    "prepare": "husky",
+    "git:status": "git status",
+    "git:wip": "bun run scripts/git-wip.js",
+    "git:save": "bun run scripts/git-save.js",
+    "git:done": "bun run scripts/git-done.js",
+    "git:push": "git push",
+    "git:branch": "bun run scripts/git-branch.js",
+    "git:switch": "bun run scripts/git-switch.js",
+    "git:pr": "bun run scripts/git-pr.js",
+    "git:cleanup": "bun run scripts/git-cleanup.js",
+    "git:backup": "bun run scripts/git-backup.js",
+    "git:health-check": "bun run scripts/git-health-check.js"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.44.1",
@@ -46,6 +60,8 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-tailwindcss": "^3.18.2",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.3"
+    "lint-staged": "^16.2.3",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14"
   }
 }
