@@ -130,6 +130,253 @@ This document outlines the phased approach to migrating mature implementations f
 
 ---
 
+## Phase 2.5: Frontend Infrastructure Setup 🎯 CRITICAL
+
+**Timeline:** 8-10 developer-days
+**Status:** Not Started
+**Priority:** CRITICAL - Blocks Phase 3
+
+### Overview
+
+Phase 2.5 establishes critical frontend infrastructure identified as gaps during alignment analysis. These components are required before implementing Stripe payment integration in Phase 3.
+
+### Tasks
+
+#### 1. Shared Types Package (2 days)
+
+- [ ] Create `packages/shared-types/` directory structure
+- [ ] Define database models (Profile, Optimization)
+- [ ] Define API request/response types
+- [ ] Define error types and codes
+- [ ] Configure TypeScript path aliases (`@repo/shared-types`)
+- [ ] Export all types for frontend/backend consumption
+
+**Example:**
+
+```typescript
+// packages/shared-types/src/models.ts
+export interface Profile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  data_consent_given: boolean;
+  created_at: string;
+}
+
+export interface Optimization {
+  id: string;
+  user_id: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  match_percentage: number | null;
+  created_at: string;
+}
+```
+
+#### 2. Supabase Client & Auth (2 days)
+
+- [ ] Create Supabase client utilities (`lib/supabase.ts`)
+- [ ] Implement auth middleware for protected routes
+- [ ] Add session management hooks (`useAuth`, `useSession`)
+- [ ] Create auth context provider
+- [ ] Add sign-up/login/logout utilities
+
+**Example:**
+
+```typescript
+// apps/frontend/src/lib/supabase.ts
+import { createBrowserClient } from '@supabase/ssr';
+
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
+
+// apps/frontend/src/middleware.ts
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse } from 'next/server';
+
+export async function middleware(request: NextRequest) {
+  // Protect /dashboard routes
+  const supabase = createServerClient(...);
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session && request.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  return NextResponse.next();
+}
+```
+
+#### 3. API Client (1 day)
+
+- [ ] Implement centralized API client with error handling
+- [ ] Add request/response interceptors
+- [ ] Configure base URL and default headers
+- [ ] Add type-safe methods (GET, POST, PUT, DELETE)
+- [ ] Integrate with Supabase JWT tokens
+
+**Example:**
+
+```typescript
+// apps/frontend/src/lib/api.ts
+import { ApiError } from '@repo/shared-types';
+
+class ApiClient {
+  private baseURL = process.env.NEXT_PUBLIC_API_URL;
+
+  async post<T>(endpoint: string, data: unknown): Promise<T> {
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error: ApiError = await response.json();
+      throw new Error(error.detail);
+    }
+
+    return response.json();
+  }
+}
+
+export const api = new ApiClient();
+```
+
+#### 4. Internationalization (pt-BR) (1 day)
+
+- [ ] Create i18n utilities and constants
+- [ ] Add translation objects for all UI text
+- [ ] Add date formatter (DD/MM/YYYY)
+- [ ] Add currency formatter (R$ 29,90)
+- [ ] Define formal "você" language guidelines
+
+**Example:**
+
+```typescript
+// apps/frontend/src/lib/i18n.ts
+export const translations = {
+  upload: {
+    title: 'Envie seu Currículo',
+    dragDrop: 'Clique para selecionar ou arraste seu arquivo aqui',
+    formats: 'PDF, DOCX ou TXT (máx. 5MB)',
+  },
+  payment: {
+    button: 'Otimizar Currículo - R$ 50,00',
+    processing: 'Processando pagamento...',
+  },
+};
+
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
+}
+```
+
+#### 5. shadcn/ui Components (1 day)
+
+- [ ] Install shadcn/ui CLI and configure `components.json`
+- [ ] Add required components: button, card, input, textarea, alert, dialog, progress
+- [ ] Customize theme colors for Brazilian market
+- [ ] Add Lucide React icon library
+- [ ] Test component rendering
+
+**Commands:**
+
+```bash
+bunx shadcn-ui@latest init
+bunx shadcn-ui@latest add button card input textarea alert dialog progress
+```
+
+#### 6. Testing Infrastructure (2 days)
+
+- [ ] Configure Jest + React Testing Library
+- [ ] Add jest-axe for accessibility testing
+- [ ] Create test utilities and helpers
+- [ ] Add MSW for API mocking (optional)
+- [ ] Write example component tests
+- [ ] Configure test coverage reporting (>80% target)
+
+**Example:**
+
+```typescript
+// apps/frontend/src/components/__tests__/Button.test.tsx
+import { render, screen } from '@testing-library/react';
+import { axe, toHaveNoViolations } from 'jest-axe';
+import { Button } from '../Button';
+
+expect.extend(toHaveNoViolations);
+
+describe('Button', () => {
+  it('should be accessible', async () => {
+    const { container } = render(<Button>Click me</Button>);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+});
+```
+
+#### 7. Environment Configuration (0.5 days)
+
+- [ ] Create complete `.env.example` with all frontend variables
+- [ ] Document each variable's purpose
+- [ ] Add runtime validation for required variables
+
+**Example:**
+
+```bash
+# apps/frontend/.env.example
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Migration Sources
+
+- **QuoteKit:**
+  - `src/libs/supabase/` → Supabase client patterns
+  - `src/libs/api.ts` → API client implementation
+  - `packages/shared-types/` → Type definitions
+  - `jest.config.js`, `jest.setup.js` → Testing setup
+  - `.env.example` → Environment variable patterns
+
+### Success Criteria
+
+- [ ] TypeScript compiles with no errors (`bun run type-check`)
+- [ ] All imports from `@repo/shared-types` resolve correctly
+- [ ] Supabase client initializes without errors
+- [ ] Protected routes redirect to login when unauthenticated
+- [ ] API client can call mock endpoints with proper error handling
+- [ ] shadcn/ui components render without styling issues
+- [ ] Jest tests pass with >80% coverage on new utilities
+- [ ] Accessibility tests pass for base components (jest-axe)
+- [ ] Brazilian Portuguese formatting works correctly (currency, dates)
+- [ ] Environment variables load correctly in development
+- [ ] Pre-commit hooks pass on all new code
+
+### Estimated Effort
+
+**Total:** 8-10 developer-days
+
+**Breakdown:**
+
+- Shared Types: 2 days
+- Supabase Auth: 2 days
+- API Client: 1 day
+- i18n: 1 day
+- shadcn/ui: 1 day
+- Testing: 2 days
+- Environment: 0.5 days
+
+---
+
 ## Phase 3: Stripe Payment Integration
 
 **Timeline:** Week 3
