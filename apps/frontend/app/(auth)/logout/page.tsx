@@ -4,8 +4,9 @@
  * Logout page - handles sign out and redirects to login
  */
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
 import { signOut } from '@/lib/auth';
 
 export default function LogoutPage() {

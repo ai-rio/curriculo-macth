@@ -4,9 +4,10 @@
  * Login page
  */
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 import { signIn } from '@/lib/auth';
 
 export default function LoginPage() {

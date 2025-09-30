@@ -3,8 +3,9 @@
  * Handles authentication, error handling, and type safety
  */
 
+import { ApiError, createApiError, ErrorCode, HttpStatus, isApiError } from '@repo/shared-types';
+
 import { createBrowserClient } from '@/lib/supabase/client';
-import { ApiError, ErrorCode, HttpStatus, isApiError, createApiError } from '@repo/shared-types';
 
 /**
  * API Client class for making HTTP requests
