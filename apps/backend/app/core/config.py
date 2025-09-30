@@ -35,6 +35,16 @@ class Settings(BaseSettings):
     supabase_url: str | None = None
     supabase_service_role_key: str | None = None
 
+    # OpenRouter Configuration
+    OPENROUTER_API_KEY: str | None = None
+    OPENROUTER_MODEL: str = "anthropic/claude-3.5-sonnet"
+    OPENROUTER_MAX_TOKENS: int = 4000
+
+    # File Upload Configuration
+    MAX_RESUME_SIZE_MB: int = 2
+    MAX_JOB_DESC_CHARS: int = 10000
+    MIN_JOB_DESC_CHARS: int = 50
+
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, ".env"),
         env_file_encoding="utf-8",
