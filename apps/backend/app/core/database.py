@@ -1,20 +1,20 @@
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator, Generator
 from functools import lru_cache
-from typing import AsyncGenerator, Generator, Optional
 
-from sqlalchemy import event, create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.orm import Session, sessionmaker
 
-from .config import settings
 from ..models.base import Base
+from .config import settings
 
 
 class _DatabaseSettings:
@@ -24,9 +24,7 @@ class _DatabaseSettings:
     ASYNC_DATABASE_URL: str = settings.ASYNC_DATABASE_URL
     DB_ECHO: bool = settings.DB_ECHO
 
-    DB_CONNECT_ARGS = (
-        {"check_same_thread": False} if SYNC_DATABASE_URL.startswith("sqlite") else {}
-    )
+    DB_CONNECT_ARGS = {"check_same_thread": False} if SYNC_DATABASE_URL.startswith("sqlite") else {}
 
 
 settings = _DatabaseSettings()

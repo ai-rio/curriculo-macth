@@ -1,4 +1,5 @@
 import uvicorn
+
 from .base import create_app
 
 app = create_app()

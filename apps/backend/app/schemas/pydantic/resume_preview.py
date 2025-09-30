@@ -1,38 +1,37 @@
-from typing import List, Optional
 from pydantic import BaseModel
 
 
 class PersonalInfo(BaseModel):
     name: str
-    title: Optional[str] = None
+    title: str | None = None
     email: str
     phone: str
-    location: Optional[str] = None
-    website: Optional[str] = None
-    linkedin: Optional[str] = None
-    github: Optional[str] = None
+    location: str | None = None
+    website: str | None = None
+    linkedin: str | None = None
+    github: str | None = None
 
 
 class ExperienceItem(BaseModel):
     id: int
     title: str
-    company: Optional[str] = None
-    location: Optional[str] = None
-    years: Optional[str] = None
-    description: List[Optional[str]] = []
+    company: str | None = None
+    location: str | None = None
+    years: str | None = None
+    description: list[str | None] = []
 
 
 class EducationItem(BaseModel):
     id: int
     institution: str
     degree: str
-    years: Optional[str] = None
-    description: Optional[str] = None
+    years: str | None = None
+    description: str | None = None
 
 
 class ResumePreviewerModel(BaseModel):
     personalInfo: PersonalInfo
-    summary: Optional[str] = None
-    experience: List[ExperienceItem]
-    education: List[EducationItem]
-    skills: List[str]
+    summary: str | None = None
+    experience: list[ExperienceItem]
+    education: list[EducationItem]
+    skills: list[str]

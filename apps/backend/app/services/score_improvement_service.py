@@ -1,27 +1,28 @@
+import asyncio
 import gc
 import json
-import asyncio
 import logging
+from collections.abc import AsyncGenerator
+
 import markdown
 import numpy as np
-
-from sqlalchemy.future import select
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Dict, Optional, Tuple, AsyncGenerator
+from sqlalchemy.future import select
 
+from app.agent import AgentManager, EmbeddingManager
+from app.models import Job, ProcessedJob, ProcessedResume, Resume
 from app.prompt import prompt_factory
 from app.schemas.json import json_schema_factory
 from app.schemas.pydantic import ResumePreviewerModel
-from app.agent import EmbeddingManager, AgentManager
-from app.models import Resume, Job, ProcessedResume, ProcessedJob
+
 from .exceptions import (
-    ResumeNotFoundError,
+    JobKeywordExtractionError,
     JobNotFoundError,
-    ResumeParsingError,
     JobParsingError,
     ResumeKeywordExtractionError,
-    JobKeywordExtractionError,
+    ResumeNotFoundError,
+    ResumeParsingError,
 )
 
 logger = logging.getLogger(__name__)
@@ -42,9 +43,7 @@ class ScoreImprovementService:
         self.json_agent_manager = AgentManager()
         self.embedding_manager = EmbeddingManager()
 
-    def _validate_resume_keywords(
-        self, processed_resume: ProcessedResume, resume_id: str
-    ) -> None:
+    def _validate_resume_keywords(self, processed_resume: ProcessedResume, resume_id: str) -> None:
         """
         Validates that keyword extraction was successful for a resume.
         Raises ResumeKeywordExtractionError if keywords are missing or empty.
@@ -76,9 +75,7 @@ class ScoreImprovementService:
         except json.JSONDecodeError:
             raise JobKeywordExtractionError(job_id=job_id)
 
-    async def _get_resume(
-        self, resume_id: str
-    ) -> Tuple[Resume | None, ProcessedResume | None]:
+    async def _get_resume(self, resume_id: str) -> tuple[Resume | None, ProcessedResume | None]:
         """
         Fetches the resume from the database.
         """
@@ -100,7 +97,7 @@ class ScoreImprovementService:
 
         return resume, processed_resume
 
-    async def _get_job(self, job_id: str) -> Tuple[Job | None, ProcessedJob | None]:
+    async def _get_job(self, job_id: str) -> tuple[Job | None, ProcessedJob | None]:
         """
         Fetches the job from the database.
         """
@@ -146,14 +143,12 @@ class ScoreImprovementService:
         extracted_job_keywords: str,
         previous_cosine_similarity_score: float,
         extracted_job_keywords_embedding: np.ndarray,
-    ) -> Tuple[str, float]:
+    ) -> tuple[str, float]:
         prompt_template = prompt_factory.get("resume_improvement")
         best_resume, best_score = resume, previous_cosine_similarity_score
 
         for attempt in range(1, self.max_retries + 1):
-            logger.info(
-                f"Attempt {attempt}/{self.max_retries} to improve resume score."
-            )
+            logger.info(f"Attempt {attempt}/{self.max_retries} to improve resume score.")
             prompt = prompt_template.format(
                 raw_job_description=job,
                 extracted_job_keywords=extracted_job_keywords,
@@ -163,20 +158,16 @@ class ScoreImprovementService:
             )
             improved = await self.md_agent_manager.run(prompt)
             emb = await self.embedding_manager.embed(text=improved)
-            score = self.calculate_cosine_similarity(
-                emb, extracted_job_keywords_embedding
-            )
+            score = self.calculate_cosine_similarity(emb, extracted_job_keywords_embedding)
 
             if score > best_score:
                 return improved, score
 
-            logger.info(
-                f"Attempt {attempt} resulted in score: {score}, best score so far: {best_score}"
-            )
+            logger.info(f"Attempt {attempt} resulted in score: {score}, best score so far: {best_score}")
 
         return best_resume, best_score
 
-    async def get_resume_for_previewer(self, updated_resume: str) -> Dict:
+    async def get_resume_for_previewer(self, updated_resume: str) -> dict:
         """
         Returns the updated resume in a format suitable for the dashboard.
         """
@@ -189,15 +180,13 @@ class ScoreImprovementService:
         raw_output = await self.json_agent_manager.run(prompt=prompt)
 
         try:
-            resume_preview: ResumePreviewerModel = ResumePreviewerModel.model_validate(
-                raw_output
-            )
+            resume_preview: ResumePreviewerModel = ResumePreviewerModel.model_validate(raw_output)
         except ValidationError as e:
             logger.info(f"Validation error: {e}")
             return None
         return resume_preview.model_dump()
 
-    async def run(self, resume_id: str, job_id: str) -> Dict:
+    async def run(self, resume_id: str, job_id: str) -> dict:
         """
         Main method to run the scoring and improving process and return dict.
         """
@@ -205,29 +194,19 @@ class ScoreImprovementService:
         resume, processed_resume = await self._get_resume(resume_id)
         job, processed_job = await self._get_job(job_id)
 
-        extracted_job_keywords = ", ".join(
-            json.loads(processed_job.extracted_keywords).get("extracted_keywords", [])
-        )
+        extracted_job_keywords = ", ".join(json.loads(processed_job.extracted_keywords).get("extracted_keywords", []))
 
         extracted_resume_keywords = ", ".join(
-            json.loads(processed_resume.extracted_keywords).get(
-                "extracted_keywords", []
-            )
+            json.loads(processed_resume.extracted_keywords).get("extracted_keywords", [])
         )
 
-        resume_embedding_task = asyncio.create_task(
-            self.embedding_manager.embed(resume.content)
-        )
-        job_kw_embedding_task = asyncio.create_task(
-            self.embedding_manager.embed(extracted_job_keywords)
-        )
+        resume_embedding_task = asyncio.create_task(self.embedding_manager.embed(resume.content))
+        job_kw_embedding_task = asyncio.create_task(self.embedding_manager.embed(extracted_job_keywords))
         resume_embedding, extracted_job_keywords_embedding = await asyncio.gather(
             resume_embedding_task, job_kw_embedding_task
         )
 
-        cosine_similarity_score = self.calculate_cosine_similarity(
-            extracted_job_keywords_embedding, resume_embedding
-        )
+        cosine_similarity_score = self.calculate_cosine_similarity(extracted_job_keywords_embedding, resume_embedding)
         updated_resume, updated_score = await self.improve_score_with_llm(
             resume=resume.content,
             extracted_resume_keywords=extracted_resume_keywords,
@@ -237,9 +216,7 @@ class ScoreImprovementService:
             extracted_job_keywords_embedding=extracted_job_keywords_embedding,
         )
 
-        resume_preview = await self.get_resume_for_previewer(
-            updated_resume=updated_resume
-        )
+        resume_preview = await self.get_resume_for_previewer(updated_resume=updated_resume)
 
         logger.info(f"Resume Preview: {resume_preview}")
 
@@ -270,27 +247,19 @@ class ScoreImprovementService:
         yield f"data: {json.dumps({'status': 'parsing', 'message': 'Parsing resume content...'})}\n\n"
         await asyncio.sleep(2)
 
-        extracted_job_keywords = ", ".join(
-            json.loads(processed_job.extracted_keywords).get("extracted_keywords", [])
-        )
+        extracted_job_keywords = ", ".join(json.loads(processed_job.extracted_keywords).get("extracted_keywords", []))
 
         extracted_resume_keywords = ", ".join(
-            json.loads(processed_resume.extracted_keywords).get(
-                "extracted_keywords", []
-            )
+            json.loads(processed_resume.extracted_keywords).get("extracted_keywords", [])
         )
 
         resume_embedding = await self.embedding_manager.embed(text=resume.content)
-        extracted_job_keywords_embedding = await self.embedding_manager.embed(
-            text=extracted_job_keywords
-        )
+        extracted_job_keywords_embedding = await self.embedding_manager.embed(text=extracted_job_keywords)
 
         yield f"data: {json.dumps({'status': 'scoring', 'message': 'Calculating compatibility score...'})}\n\n"
         await asyncio.sleep(3)
 
-        cosine_similarity_score = self.calculate_cosine_similarity(
-            extracted_job_keywords_embedding, resume_embedding
-        )
+        cosine_similarity_score = self.calculate_cosine_similarity(extracted_job_keywords_embedding, resume_embedding)
 
         yield f"data: {json.dumps({'status': 'scored', 'score': cosine_similarity_score})}\n\n"
 

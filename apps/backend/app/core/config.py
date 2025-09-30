@@ -1,8 +1,9 @@
+import logging
 import os
 import sys
-import logging
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List, Optional, Literal
 
 
 class Settings(BaseSettings):
@@ -10,20 +11,20 @@ class Settings(BaseSettings):
     # which is copied to the user's .env file upon setup.
     PROJECT_NAME: str = "Resume Matcher"
     FRONTEND_PATH: str = os.path.join(os.path.dirname(__file__), "frontend", "assets")
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     DB_ECHO: bool = False
     PYTHONDONTWRITEBYTECODE: int = 1
-    SYNC_DATABASE_URL: Optional[str] = None
-    ASYNC_DATABASE_URL: Optional[str] = None
-    SESSION_SECRET_KEY: Optional[str] = None
-    LLM_PROVIDER: Optional[str] = "ollama"
-    LLM_API_KEY: Optional[str] = None
-    LLM_BASE_URL: Optional[str] = None
-    LL_MODEL: Optional[str] = "gemma3:4b"
-    EMBEDDING_PROVIDER: Optional[str] = "ollama"
-    EMBEDDING_API_KEY: Optional[str] = None
-    EMBEDDING_BASE_URL: Optional[str] = None
-    EMBEDDING_MODEL: Optional[str] = "dengcao/Qwen3-Embedding-0.6B:Q8_0"
+    SYNC_DATABASE_URL: str | None = None
+    ASYNC_DATABASE_URL: str | None = None
+    SESSION_SECRET_KEY: str | None = None
+    LLM_PROVIDER: str | None = "ollama"
+    LLM_API_KEY: str | None = None
+    LLM_BASE_URL: str | None = None
+    LL_MODEL: str | None = "gemma3:4b"
+    EMBEDDING_PROVIDER: str | None = "ollama"
+    EMBEDDING_API_KEY: str | None = None
+    EMBEDDING_BASE_URL: str | None = None
+    EMBEDDING_MODEL: str | None = "dengcao/Qwen3-Embedding-0.6B:Q8_0"
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, ".env"),

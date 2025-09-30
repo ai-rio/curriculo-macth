@@ -1,6 +1,6 @@
-from .base import Base
-from sqlalchemy import Column, String, Table, ForeignKey
+from sqlalchemy import Column, ForeignKey, String, Table
 
+from .base import Base
 
 job_resume_association = Table(
     "job_resume",
