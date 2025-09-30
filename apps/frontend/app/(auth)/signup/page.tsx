@@ -4,9 +4,10 @@
  * Sign up page
  */
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 import { signUp } from '@/lib/auth';
 
 export default function SignUpPage() {

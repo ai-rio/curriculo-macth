@@ -4,6 +4,7 @@
  */
 
 import { createBrowserClient as createClient } from '@supabase/ssr';
+
 import type { Database } from '@/types/supabase';
 
 /**

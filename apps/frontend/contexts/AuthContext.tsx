@@ -4,9 +4,10 @@
  * Auth Context for managing authentication state across the application
  */
 
+import type { Session, User } from '@supabase/supabase-js';
 import { createContext, useEffect, useState } from 'react';
+
 import { createBrowserClient } from '@/lib/supabase/client';
-import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;

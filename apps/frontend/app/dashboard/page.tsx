@@ -2,9 +2,10 @@
  * Dashboard page - protected route
  */
 
-import { redirect } from 'next/navigation';
-import { getUser } from '@/lib/supabase/server';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+
+import { getUser } from '@/lib/supabase/server';
 
 export default async function DashboardPage() {
   const user = await getUser();
