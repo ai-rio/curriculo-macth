@@ -1,12 +1,11 @@
 import json
 import logging
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
-from .base import Strategy
-from ..providers.base import Provider
 from ..exceptions import StrategyError
-
+from ..providers.base import Provider
+from .base import Strategy
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +14,7 @@ FENCE_PATTERN = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
 
 
 class JSONWrapper(Strategy):
-    async def __call__(
-        self, prompt: str, provider: Provider, **generation_args: Any
-    ) -> Dict[str, Any]:
+    async def __call__(self, prompt: str, provider: Provider, **generation_args: Any) -> dict[str, Any]:
         """
         Wrapper strategy to format the prompt as JSON with the help of LLM.
         """
@@ -43,7 +40,7 @@ class JSONWrapper(Strategy):
         # 3) Fallback: extract the largest JSON-looking object block { ... }
         obj_start, obj_end = response.find("{"), response.rfind("}")
 
-        candidates: List[Tuple[int, str]] = []
+        candidates: list[tuple[int, str]] = []
         if obj_start != -1 and obj_end != -1 and obj_end > obj_start:
             candidates.append((obj_start, response[obj_start : obj_end + 1]))
 
@@ -67,16 +64,12 @@ class JSONWrapper(Strategy):
             raise StrategyError("JSON parsing error: failed to parse candidate JSON blocks")
 
         # 4) No braces found: fail clearly
-        logger.error(
-            "provider response contained no JSON object braces: %s", response
-        )
+        logger.error("provider response contained no JSON object braces: %s", response)
         raise StrategyError("JSON parsing error: no JSON object detected in provider response")
 
 
 class MDWrapper(Strategy):
-    async def __call__(
-        self, prompt: str, provider: Provider, **generation_args: Any
-    ) -> Dict[str, Any]:
+    async def __call__(self, prompt: str, provider: Provider, **generation_args: Any) -> dict[str, Any]:
         """
         Wrapper strategy to format the prompt as Markdown with the help of LLM.
         """
@@ -84,13 +77,8 @@ class MDWrapper(Strategy):
         response = await provider(prompt, **generation_args)
         logger.info(f"provider response: {response}")
         try:
-            response = (
-                "```md\n" + response + "```" if "```md" not in response else response
-            )
+            response = "```md\n" + response + "```" if "```md" not in response else response
             return response
         except Exception as e:
-            logger.error(
-                f"provider returned non-md. parsing error: {e} - response: {response}"
-            )
+            logger.error(f"provider returned non-md. parsing error: {e} - response: {response}")
             raise StrategyError(f"Markdown parsing error: {e}") from e
-

@@ -1,12 +1,9 @@
-from typing import Optional
-
-
 class ResumeNotFoundError(Exception):
     """
     Exception raised when a resume is not found in the database.
     """
 
-    def __init__(self, resume_id: Optional[str] = None, message: Optional[str] = None):
+    def __init__(self, resume_id: str | None = None, message: str | None = None):
         if resume_id and not message:
             message = f"Resume with ID {resume_id} not found."
         elif not message:
@@ -20,7 +17,7 @@ class JobNotFoundError(Exception):
     Exception raised when a job is not found in the database.
     """
 
-    def __init__(self, job_id: Optional[str] = None, message: Optional[str] = None):
+    def __init__(self, job_id: str | None = None, message: str | None = None):
         if job_id and not message:
             message = f"Job with ID {job_id} not found."
         elif not message:
@@ -36,9 +33,9 @@ class ResumeValidationError(Exception):
 
     def __init__(
         self,
-        resume_id: Optional[str] = None,
-        validation_error: Optional[str] = None,
-        message: Optional[str] = None,
+        resume_id: str | None = None,
+        validation_error: str | None = None,
+        message: str | None = None,
     ):
         if message:
             # we can use custom message if provided
@@ -59,7 +56,7 @@ class ResumeParsingError(Exception):
     Exception raised when a resume processing and storing in the database failed.
     """
 
-    def __init__(self, resume_id: Optional[str] = None, message: Optional[str] = None):
+    def __init__(self, resume_id: str | None = None, message: str | None = None):
         if resume_id and not message:
             message = f"Parsing of resume with ID {resume_id} failed."
         elif not message:
@@ -73,7 +70,7 @@ class JobParsingError(Exception):
     Exception raised when a resume processing and storing in the database failed.
     """
 
-    def __init__(self, job_id: Optional[str] = None, message: Optional[str] = None):
+    def __init__(self, job_id: str | None = None, message: str | None = None):
         if job_id and not message:
             message = f"Parsing of job with ID {job_id} failed."
         elif not message:
@@ -87,7 +84,7 @@ class ResumeKeywordExtractionError(Exception):
     Exception raised when keyword extraction from resume failed or no keywords were extracted.
     """
 
-    def __init__(self, resume_id: Optional[str] = None, message: Optional[str] = None):
+    def __init__(self, resume_id: str | None = None, message: str | None = None):
         if resume_id and not message:
             message = f"Keyword extraction failed for resume with ID {resume_id}. Cannot proceed with resume improvement without extracted keywords."
         elif not message:
@@ -101,7 +98,7 @@ class JobKeywordExtractionError(Exception):
     Exception raised when keyword extraction from job failed or no keywords were extracted.
     """
 
-    def __init__(self, job_id: Optional[str] = None, message: Optional[str] = None):
+    def __init__(self, job_id: str | None = None, message: str | None = None):
         if job_id and not message:
             message = f"Keyword extraction failed for job with ID {job_id}. Cannot proceed with resume improvement without job keywords."
         elif not message:

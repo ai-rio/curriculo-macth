@@ -1,20 +1,20 @@
 import os
-
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
-from .api import health_check, v1_router, RequestIDMiddleware
+from .api import RequestIDMiddleware, health_check, v1_router
 from .core import (
-    settings,
     async_engine,
-    setup_logging,
     custom_http_exception_handler,
-    validation_exception_handler,
+    settings,
+    setup_logging,
     unhandled_exception_handler,
+    validation_exception_handler,
 )
 from .models import Base
 
@@ -40,9 +40,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    app.add_middleware(
-        SessionMiddleware, secret_key=settings.SESSION_SECRET_KEY, same_site="lax"
-    )
+    app.add_middleware(SessionMiddleware, secret_key=settings.SESSION_SECRET_KEY, same_site="lax")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.ALLOWED_ORIGINS,

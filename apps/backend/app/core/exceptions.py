@@ -1,9 +1,9 @@
 import logging
 
-from sqlalchemy.exc import SQLAlchemyError
-from fastapi import Request, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 logger = logging.getLogger(__name__)

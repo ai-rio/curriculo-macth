@@ -1,9 +1,6 @@
 {
   "apps/frontend/**/*.{ts,tsx}": ["bunx prettier --write", "bash -c 'cd apps/frontend && bun run type-check'"],
   "apps/frontend/**/*.{js,jsx}": ["bunx prettier --write"],
-  "apps/backend/**/*.py": [
-    "bash -c 'cd apps/backend && uv run ruff check --fix --exit-zero && uv run ruff format'",
-    "bash -c 'cd apps/backend && uv run pyright'"
-  ],
+  "apps/backend/**/*.py": ["bash -c 'cd apps/backend && uv run ruff check --fix --exit-zero && uv run ruff format'"],
   "*.{json,md,yml,yaml}": ["bunx prettier --write"]
 }

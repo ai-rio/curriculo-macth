@@ -1,9 +1,9 @@
-from sqlalchemy.types import JSON
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, text
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, String, Integer, ForeignKey, Text, DateTime, text
+from sqlalchemy.types import JSON
 
-from .base import Base
 from .association import job_resume_association
+from .base import Base
 
 
 class ProcessedResume(Base):
@@ -55,8 +55,6 @@ class Resume(Base):
         index=True,
     )
 
-    raw_resume_association = relationship(
-        "ProcessedResume", back_populates="raw_resume", uselist=False
-    )
+    raw_resume_association = relationship("ProcessedResume", back_populates="raw_resume", uselist=False)
 
     jobs = relationship("Job", back_populates="resumes")

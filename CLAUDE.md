@@ -150,3 +150,5 @@ Use specialized AI agents for complex tasks (see `.claude/agents/`):
 - **code-reviewer-agent** - Code review, security, LGPD compliance
 
 **Learn more**: See `.claude/README.md` for agent usage guide.
+
+- Add to memory . "Avoid documentation bloating at all costs"

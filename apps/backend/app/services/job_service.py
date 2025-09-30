@@ -1,17 +1,18 @@
-import uuid
 import json
 import logging
+import uuid
+from typing import Any
 
-from typing import List, Dict, Any, Optional
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agent import AgentManager
+from app.models import Job, ProcessedJob, Resume
 from app.prompt import prompt_factory
 from app.schemas.json import json_schema_factory
-from app.models import Job, Resume, ProcessedJob
 from app.schemas.pydantic import StructuredJobModel
+
 from .exceptions import JobNotFoundError
 
 logger = logging.getLogger(__name__)
@@ -22,16 +23,14 @@ class JobService:
         self.db = db
         self.json_agent_manager = AgentManager()
 
-    async def create_and_store_job(self, job_data: dict) -> List[str]:
+    async def create_and_store_job(self, job_data: dict) -> list[str]:
         """
         Stores job data in the database and returns a list of job IDs.
         """
         resume_id = str(job_data.get("resume_id"))
 
         if not await self._is_resume_available(resume_id):
-            raise AssertionError(
-                f"resume corresponding to resume_id: {resume_id} not found"
-            )
+            raise AssertionError(f"resume corresponding to resume_id: {resume_id} not found")
 
         job_ids = []
         for job_description in job_data.get("job_descriptions", []):
@@ -43,9 +42,7 @@ class JobService:
             )
             self.db.add(job)
 
-            await self._extract_and_store_structured_job(
-                job_id=job_id, job_description_text=job_description
-            )
+            await self._extract_and_store_structured_job(job_id=job_id, job_description_text=job_description)
             logger.info(f"Job ID: {job_id}")
             job_ids.append(job_id)
 
@@ -60,9 +57,7 @@ class JobService:
         result = await self.db.scalar(query)
         return result is not None
 
-    async def _extract_and_store_structured_job(
-        self, job_id, job_description_text: str
-    ):
+    async def _extract_and_store_structured_job(self, job_id, job_description_text: str):
         """
         extract and store structured job data in the database
         """
@@ -77,31 +72,23 @@ class JobService:
             company_profile=json.dumps(structured_job.get("company_profile"))
             if structured_job.get("company_profile")
             else None,
-            location=json.dumps(structured_job.get("location"))
-            if structured_job.get("location")
-            else None,
+            location=json.dumps(structured_job.get("location")) if structured_job.get("location") else None,
             date_posted=structured_job.get("date_posted"),
             employment_type=structured_job.get("employment_type"),
             job_summary=structured_job.get("job_summary"),
-            key_responsibilities=json.dumps(
-                {"key_responsibilities": structured_job.get("key_responsibilities", [])}
-            )
+            key_responsibilities=json.dumps({"key_responsibilities": structured_job.get("key_responsibilities", [])})
             if structured_job.get("key_responsibilities")
             else None,
             qualifications=json.dumps(structured_job.get("qualifications", []))
             if structured_job.get("qualifications")
             else None,
-            compensation_and_benfits=json.dumps(
-                structured_job.get("compensation_and_benfits", [])
-            )
+            compensation_and_benfits=json.dumps(structured_job.get("compensation_and_benfits", []))
             if structured_job.get("compensation_and_benfits")
             else None,
             application_info=json.dumps(structured_job.get("application_info", []))
             if structured_job.get("application_info")
             else None,
-            extracted_keywords=json.dumps(
-                {"extracted_keywords": structured_job.get("extracted_keywords", [])}
-            )
+            extracted_keywords=json.dumps({"extracted_keywords": structured_job.get("extracted_keywords", [])})
             if structured_job.get("extracted_keywords")
             else None,
         )
@@ -112,9 +99,7 @@ class JobService:
 
         return job_id
 
-    async def _extract_structured_json(
-        self, job_description_text: str
-    ) -> Dict[str, Any] | None:
+    async def _extract_structured_json(self, job_description_text: str) -> dict[str, Any] | None:
         """
         Uses the AgentManager+JSONWrapper to ask the LLM to
         return the data in exact JSON schema we need.
@@ -128,21 +113,19 @@ class JobService:
         raw_output = await self.json_agent_manager.run(prompt=prompt)
 
         try:
-            structured_job: StructuredJobModel = StructuredJobModel.model_validate(
-                raw_output
-            )
+            structured_job: StructuredJobModel = StructuredJobModel.model_validate(raw_output)
         except ValidationError as e:
             logger.info(f"Validation error: {e}")
             error_details = []
             for error in e.errors():
                 field = " -> ".join(str(loc) for loc in error["loc"])
                 error_details.append(f"{field}: {error['msg']}")
-            
+
             logger.info(f"Validation error details: {'; '.join(error_details)}")
             return None
         return structured_job.model_dump(mode="json")
 
-    async def get_job_with_processed_data(self, job_id: str) -> Optional[Dict]:
+    async def get_job_with_processed_data(self, job_id: str) -> dict | None:
         """
         Fetches both job and processed job data from the database and combines them.
 
@@ -174,7 +157,7 @@ class JobService:
                 "content": job.content,
                 "created_at": job.created_at.isoformat() if job.created_at else None,
             },
-            "processed_job": None
+            "processed_job": None,
         }
 
         if processed_job:
@@ -185,11 +168,23 @@ class JobService:
                 "date_posted": processed_job.date_posted,
                 "employment_type": processed_job.employment_type,
                 "job_summary": processed_job.job_summary,
-                "key_responsibilities": json.loads(processed_job.key_responsibilities).get("key_responsibilities", []) if processed_job.key_responsibilities else None,
-                "qualifications": json.loads(processed_job.qualifications).get("qualifications", []) if processed_job.qualifications else None,
-                "compensation_and_benfits": json.loads(processed_job.compensation_and_benfits).get("compensation_and_benfits", []) if processed_job.compensation_and_benfits else None,
-                "application_info": json.loads(processed_job.application_info).get("application_info", []) if processed_job.application_info else None,
-                "extracted_keywords": json.loads(processed_job.extracted_keywords).get("extracted_keywords", []) if processed_job.extracted_keywords else None,
+                "key_responsibilities": json.loads(processed_job.key_responsibilities).get("key_responsibilities", [])
+                if processed_job.key_responsibilities
+                else None,
+                "qualifications": json.loads(processed_job.qualifications).get("qualifications", [])
+                if processed_job.qualifications
+                else None,
+                "compensation_and_benfits": json.loads(processed_job.compensation_and_benfits).get(
+                    "compensation_and_benfits", []
+                )
+                if processed_job.compensation_and_benfits
+                else None,
+                "application_info": json.loads(processed_job.application_info).get("application_info", [])
+                if processed_job.application_info
+                else None,
+                "extracted_keywords": json.loads(processed_job.extracted_keywords).get("extracted_keywords", [])
+                if processed_job.extracted_keywords
+                else None,
                 "processed_at": processed_job.processed_at.isoformat() if processed_job.processed_at else None,
             }
 

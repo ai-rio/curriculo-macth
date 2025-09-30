@@ -1,33 +1,33 @@
 import logging
 import traceback
-
 from uuid import uuid4
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.responses import JSONResponse, StreamingResponse
+
 from fastapi import (
     APIRouter,
-    File,
-    UploadFile,
-    HTTPException,
     Depends,
-    Request,
-    status,
+    File,
+    HTTPException,
     Query,
+    Request,
+    UploadFile,
+    status,
 )
+from fastapi.responses import JSONResponse, StreamingResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_db_session
+from app.schemas.pydantic import ResumeImprovementRequest
 from app.services import (
-    ResumeService,
-    ScoreImprovementService,
-    ResumeNotFoundError,
-    ResumeParsingError,
-    ResumeValidationError,
+    JobKeywordExtractionError,
     JobNotFoundError,
     JobParsingError,
     ResumeKeywordExtractionError,
-    JobKeywordExtractionError,
+    ResumeNotFoundError,
+    ResumeParsingError,
+    ResumeService,
+    ResumeValidationError,
+    ScoreImprovementService,
 )
-from app.schemas.pydantic import ResumeImprovementRequest
 
 resume_router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -83,9 +83,7 @@ async def upload_resume(
             detail=str(e),
         )
     except Exception as e:
-        logger.error(
-            f"Error processing file: {str(e)} - traceback: {traceback.format_exc()}"
-        )
+        logger.error(f"Error processing file: {str(e)} - traceback: {traceback.format_exc()}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error processing file: {str(e)}",
@@ -106,9 +104,7 @@ async def score_and_improve(
     request: Request,
     payload: ResumeImprovementRequest,
     db: AsyncSession = Depends(get_db_session),
-    stream: bool = Query(
-        False, description="Enable streaming response using Server-Sent Events"
-    ),
+    stream: bool = Query(False, description="Enable streaming response using Server-Sent Events"),
 ):
     """
     Scores and improves a resume against a job description.
@@ -231,14 +227,10 @@ async def get_resume(
             )
 
         resume_service = ResumeService(db)
-        resume_data = await resume_service.get_resume_with_processed_data(
-            resume_id=resume_id
-        )
-        
+        resume_data = await resume_service.get_resume_with_processed_data(resume_id=resume_id)
+
         if not resume_data:
-            raise ResumeNotFoundError(
-                message=f"Resume with id {resume_id} not found"
-            )
+            raise ResumeNotFoundError(message=f"Resume with id {resume_id} not found")
 
         return JSONResponse(
             content={
@@ -247,7 +239,7 @@ async def get_resume(
             },
             headers=headers,
         )
-    
+
     except ResumeNotFoundError as e:
         logger.error(str(e))
         raise HTTPException(

@@ -1,14 +1,14 @@
 import logging
 import traceback
-
 from uuid import uuid4
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, HTTPException, Depends, Request, status, Query
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_db_session
-from app.services import JobService, JobNotFoundError
 from app.schemas.pydantic.job import JobUploadRequest
+from app.services import JobNotFoundError, JobService
 
 job_router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -103,14 +103,10 @@ async def get_job(
             )
 
         job_service = JobService(db)
-        job_data = await job_service.get_job_with_processed_data(
-            job_id=job_id
-        )
-        
+        job_data = await job_service.get_job_with_processed_data(job_id=job_id)
+
         if not job_data:
-            raise JobNotFoundError(
-                message=f"Job with id {job_id} not found"
-            )
+            raise JobNotFoundError(message=f"Job with id {job_id} not found")
 
         return JSONResponse(
             content={
@@ -119,7 +115,7 @@ async def get_job(
             },
             headers=headers,
         )
-    
+
     except JobNotFoundError as e:
         logger.error(str(e))
         raise HTTPException(
