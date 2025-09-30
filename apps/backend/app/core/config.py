@@ -26,6 +26,15 @@ class Settings(BaseSettings):
     EMBEDDING_BASE_URL: str | None = None
     EMBEDDING_MODEL: str | None = "dengcao/Qwen3-Embedding-0.6B:Q8_0"
 
+    # Stripe Configuration
+    stripe_secret_key: str | None = None
+    stripe_webhook_secret: str | None = None
+    stripe_price_id: str | None = None
+
+    # Supabase Configuration
+    supabase_url: str | None = None
+    supabase_service_role_key: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, ".env"),
         env_file_encoding="utf-8",

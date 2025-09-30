@@ -39,13 +39,19 @@ export const jobDescription = {
 export const payment = {
   title: 'Finalizar Pagamento',
   subtitle: 'Complete o pagamento para iniciar a otimização do seu currículo',
-  button: 'Otimizar Currículo',
+  button: 'Otimizar Currículo - R$ 50,00',
   price: 'R$ 50,00',
   processing: 'Processando pagamento...',
   success: 'Pagamento realizado com sucesso!',
   error: 'Erro ao processar pagamento. Por favor, tente novamente.',
   cancelled: 'Pagamento cancelado.',
   description: 'Otimização de Currículo com IA',
+  securePayment: 'Pagamento seguro processado pela Stripe',
+  errors: {
+    notAuthenticated: 'Você precisa estar autenticado para continuar',
+    checkoutFailed: 'Falha ao criar sessão de pagamento',
+    verificationFailed: 'Falha ao verificar pagamento',
+  },
 } as const;
 
 /**
@@ -118,6 +124,19 @@ export const errors = {
   notFound: 'Recurso não encontrado.',
   serverError: 'Erro no servidor. Por favor, tente novamente mais tarde.',
   rateLimitExceeded: 'Muitas requisições. Por favor, aguarde alguns minutos.',
+} as const;
+
+/**
+ * Combined translations object for convenience
+ */
+export const translations = {
+  upload,
+  jobDescription,
+  payment,
+  results,
+  nav,
+  common,
+  errors,
 } as const;
 
 /**
