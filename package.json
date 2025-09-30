@@ -3,10 +3,12 @@
   "version": "0.0.1",
   "description": "Veridis Quo.",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "install:frontend": "cd apps/frontend && bun install",
     "install:backend": "cd apps/backend && uv sync",
-    "install": "bun run install:frontend && bun run install:backend",
     "dev:backend": "cd apps/backend && uv run uvicorn app.main:app --reload --port 8000 --timeout-keep-alive 300 --timeout-graceful-shutdown 300",
     "dev:frontend": "cd apps/frontend && bun run dev",
     "dev": "concurrently \"bun:dev:backend\" \"bun:dev:frontend\"",
