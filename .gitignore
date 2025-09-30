@@ -53,6 +53,10 @@ instance/
 .claude/
 .serena/
 
+# Generated digest files
+digest.txt
+docs/digest/
+
 # Supabase local development
 supabase/.temp/
 supabase/.branches/
