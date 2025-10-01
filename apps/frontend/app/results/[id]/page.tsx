@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, Loader2, CheckCircle2, XCircle, FileText } from 'lucide-react';
+import { CheckCircle2, Download, FileText, Loader2, XCircle } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -11,11 +11,13 @@ import { api } from '@/lib/api';
 import { common, results } from '@/lib/i18n';
 import { createBrowserClient as createClient } from '@/lib/supabase/client';
 
-interface OptimizationStatus {
+interface ResumeImprovementStatus {
   id: string;
+  resume_id: string;
+  job_id: string;
   user_id: string;
   status: string;
-  optimized_text: string | null;
+  optimized_content: string | null;
   docx_storage_path: string | null;
   match_percentage: number | null;
   suggestions: string[] | null;
@@ -29,53 +31,49 @@ interface OptimizationStatus {
 export default function ResultsPage() {
   const params = useParams();
   const router = useRouter();
-  const optimizationId = params.id as string;
+  const improvementId = params.id as string;
 
-  const [status, setStatus] = useState<OptimizationStatus | null>(null);
+  const [status, setStatus] = useState<ResumeImprovementStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
 
-  // Poll for optimization status
+  // Poll for resume improvement status
   useEffect(() => {
-    if (!optimizationId) return;
-
-    let pollInterval: NodeJS.Timeout;
+    if (!improvementId) return;
 
     const fetchStatus = async () => {
       try {
-        const data = await api.get<OptimizationStatus>(`/api/v1/optimizations/${optimizationId}`);
+        // We need to create a new endpoint or use an existing one to get improvement status
+        // For now, let's assume there's an endpoint like /api/v1/resumes/improvements/:id
+        const data = await api.get<ResumeImprovementStatus>(
+          `/api/v1/resumes/improvements/${improvementId}`
+        );
         setStatus(data);
         setLoading(false);
 
         // Stop polling if completed or failed
         if (data.status === 'completed' || data.status === 'failed') {
-          if (pollInterval) {
-            clearInterval(pollInterval);
-          }
+          // Will be cleared in useEffect cleanup
         }
       } catch (err: any) {
-        console.error('Error fetching optimization status:', err);
+        console.error('Error fetching resume improvement status:', err);
         setError(err.message || results.error);
         setLoading(false);
-        if (pollInterval) {
-          clearInterval(pollInterval);
-        }
+        // Will be cleared in useEffect cleanup
       }
     };
+
+    // Set up polling interval
+    const pollInterval: NodeJS.Timeout = setInterval(fetchStatus, 3000);
 
     // Initial fetch
     fetchStatus();
 
-    // Poll every 3 seconds
-    pollInterval = setInterval(fetchStatus, 3000);
-
     return () => {
-      if (pollInterval) {
-        clearInterval(pollInterval);
-      }
+      clearInterval(pollInterval);
     };
-  }, [optimizationId]);
+  }, [improvementId]);
 
   const handleDownload = async () => {
     if (!status?.docx_storage_path) return;
@@ -83,24 +81,43 @@ export default function ResultsPage() {
     setDownloading(true);
 
     try {
-      const supabase = createClient();
+      // Try to download from the backend API endpoint first
+      // This would be a new endpoint like GET /api/v1/resumes/:id/download
+      const response = await fetch(`/api/v1/resumes/download/${status.id}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${(await createClient().auth.getSession()).data.session?.access_token}`,
+        },
+      });
 
-      // Download file from Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('optimized-resumes')
-        .download(status.docx_storage_path);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `curriculo_otimizado_${improvementId}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        // Fallback to Supabase Storage download
+        const supabase = createClient();
+        const { data, error } = await supabase.storage
+          .from('optimized-resumes')
+          .download(status.docx_storage_path);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Create download link
-      const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `curriculo_otimizado_${optimizationId}.docx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+        const url = URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `curriculo_otimizado_${improvementId}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
     } catch (err: any) {
       console.error('Error downloading file:', err);
       setError('Erro ao baixar arquivo. Por favor, tente novamente.');
@@ -244,7 +261,7 @@ export default function ResultsPage() {
       </Card>
 
       {/* Optimized Text Preview */}
-      {status?.optimized_text && (
+      {status?.optimized_content && (
         <Card>
           <CardHeader>
             <CardTitle>{results.viewOptimized}</CardTitle>
@@ -252,7 +269,7 @@ export default function ResultsPage() {
           <CardContent>
             <div className="prose prose-sm max-w-none">
               <pre className="whitespace-pre-wrap text-sm font-sans bg-muted p-4 rounded-lg">
-                {status.optimized_text}
+                {status.optimized_content}
               </pre>
             </div>
           </CardContent>

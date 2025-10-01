@@ -1,13 +1,16 @@
 from typing import Any
 
-from ..core import settings
+from ..core.config import settings
 from .providers.base import EmbeddingProvider, Provider
 from .strategies.wrapper import JSONWrapper, MDWrapper
 
 
 class AgentManager:
     def __init__(
-        self, strategy: str | None = None, model: str = settings.LL_MODEL, model_provider: str = settings.LLM_PROVIDER
+        self,
+        strategy: str | None = None,
+        model: str = settings.LL_MODEL or "anthropic/claude-3.5-sonnet",
+        model_provider: str = settings.LLM_PROVIDER or "openrouter",
     ) -> None:
         match strategy:
             case "md":
@@ -29,13 +32,13 @@ class AgentManager:
             case "openai":
                 from .providers.openai import OpenAIProvider
 
-                api_key = opts.get("llm_api_key", settings.LLM_API_KEY)
+                api_key = opts.get("llm_api_key", settings.LLM_API_KEY or "")
                 return OpenAIProvider(model_name=self.model, api_key=api_key, opts=opts)
             case "openrouter":
                 from .providers.openrouter import OpenRouterProvider
 
-                api_key = opts.get("llm_api_key", settings.OPENROUTER_API_KEY or settings.LLM_API_KEY)
-                api_base_url = opts.get("llm_base_url", settings.LLM_BASE_URL)
+                api_key = opts.get("llm_api_key", settings.OPENROUTER_API_KEY or settings.LLM_API_KEY or "")
+                api_base_url = opts.get("llm_base_url", settings.LLM_BASE_URL or "")
                 return OpenRouterProvider(
                     model_name=self.model,
                     api_key=api_key,
@@ -43,16 +46,10 @@ class AgentManager:
                     opts=opts,
                 )
             case _:
-                from .providers.llama_index import LlamaIndexProvider
+                from ..exceptions import ProviderError
 
-                llm_api_key = opts.get("llm_api_key", settings.LLM_API_KEY)
-                llm_api_base_url = opts.get("llm_base_url", settings.LLM_BASE_URL)
-                return LlamaIndexProvider(
-                    api_key=llm_api_key,
-                    model_name=self.model,
-                    api_base_url=llm_api_base_url,
-                    provider=self.model_provider,
-                    opts=opts,
+                raise ProviderError(
+                    f"Unsupported LLM provider: {self.model_provider}. Supported providers: openai, openrouter"
                 )
 
     async def run(self, prompt: str, **kwargs: Any) -> dict[str, Any]:
@@ -65,7 +62,9 @@ class AgentManager:
 
 class EmbeddingManager:
     def __init__(
-        self, model: str = settings.EMBEDDING_MODEL, model_provider: str = settings.EMBEDDING_PROVIDER
+        self,
+        model: str = settings.EMBEDDING_MODEL or "text-embedding-3-small",
+        model_provider: str = settings.EMBEDDING_PROVIDER or "openrouter",
     ) -> None:
         self._model = model
         self._model_provider = model_provider
@@ -75,24 +74,25 @@ class EmbeddingManager:
             case "openai":
                 from .providers.openai import OpenAIEmbeddingProvider
 
-                api_key = kwargs.get("openai_api_key", settings.EMBEDDING_API_KEY)
+                api_key = kwargs.get("openai_api_key", settings.EMBEDDING_API_KEY or "")
                 return OpenAIEmbeddingProvider(api_key=api_key, embedding_model=self._model)
             case "openrouter":
                 from .providers.openrouter import OpenRouterEmbeddingProvider
 
-                api_key = kwargs.get("embedding_api_key", settings.OPENROUTER_API_KEY or settings.EMBEDDING_API_KEY)
-                api_base_url = kwargs.get("embedding_base_url", settings.EMBEDDING_BASE_URL)
+                api_key = kwargs.get(
+                    "embedding_api_key", settings.OPENROUTER_API_KEY or settings.EMBEDDING_API_KEY or ""
+                )
+                api_base_url = kwargs.get("embedding_base_url", settings.EMBEDDING_BASE_URL or "")
                 return OpenRouterEmbeddingProvider(
                     api_key=api_key,
                     embedding_model=self._model,
                     api_base_url=api_base_url,
                 )
             case _:
-                from .providers.llama_index import LlamaIndexEmbeddingProvider
+                from ..exceptions import ProviderError
 
-                embed_api_key = kwargs.get("embedding_api_key", settings.EMBEDDING_API_KEY)
-                return LlamaIndexEmbeddingProvider(
-                    api_key=embed_api_key, provider=self._model_provider, embedding_model=self._model
+                raise ProviderError(
+                    f"Unsupported embedding provider: {self._model_provider}. Supported providers: openai, openrouter"
                 )
 
     async def embed(self, text: str, **kwargs: Any) -> list[float]:

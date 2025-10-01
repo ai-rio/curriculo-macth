@@ -3,7 +3,7 @@
  * Reference: docs/development/architecture.md
  */
 
-import type { Optimization, OptimizationStatus } from './models';
+import type { Resume, Job, ResumeStatus } from './models';
 
 /**
  * Generic list response wrapper
@@ -16,61 +16,131 @@ export interface ListResponse<T> {
 }
 
 /**
- * Request to create a new optimization job
- * POST /api/optimizations
+ * Request to upload a resume file
+ * POST /api/v1/resumes/upload
  */
-export interface OptimizationRequest {
-  /** Extracted text from uploaded resume */
-  resume_text: string;
-  /** Job description provided by user */
+export interface ResumeUploadRequest {
+  /** File to upload (PDF or DOCX) */
+  file: File;
+}
+
+/**
+ * Response after uploading resume
+ * Returns resume ID and storage information
+ */
+export interface ResumeUploadResponse {
+  /** Success message */
+  message: string;
+  /** Request ID for tracking */
+  request_id: string;
+  /** UUID of uploaded resume */
+  resume_id: string;
+}
+
+/**
+ * Request to create a job from description
+ * POST /api/v1/jobs/upload
+ */
+export interface JobCreateRequest {
+  /** Job description text */
   job_description: string;
-  /** Stripe payment ID from checkout session */
-  stripe_payment_id: string;
+  /** Optional job title */
+  job_title?: string;
+  /** Optional company name */
+  company?: string;
 }
 
 /**
- * Response after creating optimization
- * Returns optimization ID and Stripe checkout URL
+ * Response after creating job
  */
-export interface OptimizationCreateResponse {
-  /** UUID of created optimization */
-  id: string;
-  /** Stripe Checkout Session URL for payment */
-  checkout_url: string;
-  /** Current status (should be 'pending') */
-  status: OptimizationStatus;
+export interface JobCreateResponse {
+  /** Success message */
+  message: string;
+  /** UUID of created job */
+  job_id: string;
+  /** Request metadata */
+  request: {
+    request_id: string;
+    payload: JobCreateRequest;
+  };
 }
 
 /**
- * Response for GET /api/optimizations/:id
- * Returns full optimization details
+ * Request to improve resume with AI (requires payment)
+ * POST /api/v1/resumes/improve
  */
-export interface OptimizationResponse extends Optimization {
-  /** Download URL for optimized resume (if completed) */
-  download_url?: string | null;
+export interface ResumeImprovementRequest {
+  /** Resume ID to improve */
+  resume_id: string;
+  /** Job ID to match against */
+  job_id: string;
+  /** Stripe payment intent ID */
+  payment_intent_id: string;
 }
 
 /**
- * Request to upload a file
- * Used for resume uploads to Supabase Storage
+ * Response for resume improvement
  */
-export interface UploadRequest {
-  /** File name */
-  file_name: string;
-  /** File MIME type (application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, text/plain) */
-  content_type: string;
-  /** File size in bytes */
-  file_size: number;
+export interface ResumeImprovementResponse {
+  /** Request ID for tracking */
+  request_id: string;
+  /** Success status */
+  success: boolean;
+  /** Response message */
+  message: string;
+  /** Optimization result data */
+  data: {
+    resume_id: string;
+    job_id: string;
+    status: ResumeStatus;
+    optimized_content?: string;
+    download_url?: string;
+    match_percentage?: number;
+    suggestions?: string[];
+    keywords?: string[];
+  };
 }
 
 /**
- * Response after requesting upload URL
+ * Response for GET /api/v1/resumes
+ * Returns resume data with processed information
  */
-export interface UploadResponse {
-  /** Signed upload URL from Supabase Storage */
-  upload_url: string;
-  /** Storage path where file will be saved */
-  storage_path: string;
+export interface ResumeResponse {
+  /** Request ID for tracking */
+  request_id: string;
+  /** Resume data */
+  data: {
+    resume: Resume;
+    processed_resume?: {
+      id: string;
+      resume_id: string;
+      extracted_text: string;
+      structured_data?: unknown;
+      created_at: string;
+      updated_at: string;
+    };
+  };
+}
+
+/**
+ * Response for GET /api/v1/jobs
+ * Returns job data with processed information
+ */
+export interface JobResponse {
+  /** Request ID for tracking */
+  request_id: string;
+  /** Job data */
+  data: {
+    job: Job;
+    processed_job?: {
+      id: string;
+      job_id: string;
+      parsed_content: unknown;
+      structured_data?: unknown;
+      created_at: string;
+      updated_at: string;
+    };
+  };
 }
 
 /**
@@ -91,17 +161,4 @@ export interface PaginationParams {
   page?: number;
   /** Number of items per page */
   page_size?: number;
-}
-
-/**
- * Query parameters for listing optimizations
- * GET /api/optimizations
- */
-export interface OptimizationListParams extends PaginationParams {
-  /** Filter by status */
-  status?: OptimizationStatus;
-  /** Sort by field (created_at, updated_at) */
-  sort_by?: 'created_at' | 'updated_at';
-  /** Sort direction */
-  sort_order?: 'asc' | 'desc';
 }

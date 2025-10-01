@@ -3,7 +3,6 @@ import logging
 from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from sqlalchemy.exc import SQLAlchemyError
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 logger = logging.getLogger(__name__)
@@ -33,8 +32,8 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     )
 
 
-async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
-    logger.error(f"DB error on {request.url}: {exc} - {exc.with_traceback()}")
+async def supabase_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Supabase error on {request.url}: {exc}")
     return JSONResponse(
         status_code=500,
         content={

@@ -5,7 +5,7 @@ from typing import Any
 from fastapi.concurrency import run_in_threadpool
 from openai import OpenAI
 
-from ...core import settings
+from ...core.config import settings
 from ..exceptions import ProviderError
 from .base import EmbeddingProvider, Provider
 
@@ -13,7 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class OpenAIProvider(Provider):
-    def __init__(self, api_key: str | None = None, model_name: str = settings.LL_MODEL, opts: dict[str, Any] = None):
+    def __init__(
+        self,
+        api_key: str | None = None,
+        model_name: str = settings.LL_MODEL or "gpt-3.5-turbo",
+        opts: dict[str, Any] = None,
+    ):
         if opts is None:
             opts = {}
         api_key = api_key or settings.LLM_API_KEY or os.getenv("OPENAI_API_KEY")
@@ -54,7 +59,7 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
     def __init__(
         self,
         api_key: str | None = None,
-        embedding_model: str = settings.EMBEDDING_MODEL,
+        embedding_model: str = settings.EMBEDDING_MODEL or "text-embedding-3-small",
     ):
         api_key = api_key or settings.EMBEDDING_API_KEY or os.getenv("OPENAI_API_KEY")
         if not api_key:

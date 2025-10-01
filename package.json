@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "install:backend": "cd apps/backend && uv sync",
-    "dev:backend": "cd apps/backend && uv run uvicorn app.main:app --reload --port 8000 --timeout-keep-alive 300 --timeout-graceful-shutdown 300",
+    "dev:backend": "cd apps/backend && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --timeout-keep-alive 300 --timeout-graceful-shutdown 300",
     "dev:frontend": "cd apps/frontend && bun run dev",
     "dev": "concurrently \"bun:dev:backend\" \"bun:dev:frontend\"",
     "build:frontend": "cd apps/frontend && bun run build",

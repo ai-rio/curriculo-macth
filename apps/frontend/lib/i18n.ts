@@ -51,6 +51,7 @@ export const payment = {
     notAuthenticated: 'Você precisa estar autenticado para continuar',
     checkoutFailed: 'Falha ao criar sessão de pagamento',
     verificationFailed: 'Falha ao verificar pagamento',
+    paymentFailed: 'Falha ao processar pagamento. Por favor, tente novamente.',
   },
 } as const;
 

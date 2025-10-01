@@ -5,7 +5,7 @@
  * For production, generate these automatically using:
  * `supabase gen types typescript --project-id your-project-ref > types/database.types.ts`
  *
- * @see /supabase/migrations/20250929000000_initial_schema.sql
+ * Updated for unified resume/job/improvement system
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -56,24 +56,20 @@ export interface Database {
           },
         ];
       };
-      optimizations: {
+      resumes: {
         Row: {
           id: string;
           user_id: string;
-          input_resume_filename: string;
-          input_resume_storage_path: string | null;
-          input_job_description: string;
-          output_optimized_resume: string | null;
-          storage_path_docx: string | null;
-          status: OptimizationStatus;
-          stripe_payment_id: string | null;
-          stripe_payment_status: string | null;
+          filename: string;
+          content_type: string;
+          file_size: number;
+          storage_path: string;
+          status: ResumeStatus;
+          extracted_text: string | null;
+          structured_data: Json | null;
           processing_started_at: string | null;
           processing_completed_at: string | null;
           error_message: string | null;
-          ai_model_used: string | null;
-          ai_tokens_used: number | null;
-          ai_processing_time_ms: number | null;
           created_at: string;
           updated_at: string;
           deleted_at: string | null;
@@ -81,20 +77,16 @@ export interface Database {
         Insert: {
           id?: string;
           user_id: string;
-          input_resume_filename: string;
-          input_resume_storage_path?: string | null;
-          input_job_description: string;
-          output_optimized_resume?: string | null;
-          storage_path_docx?: string | null;
-          status?: OptimizationStatus;
-          stripe_payment_id?: string | null;
-          stripe_payment_status?: string | null;
+          filename: string;
+          content_type: string;
+          file_size: number;
+          storage_path: string;
+          status?: ResumeStatus;
+          extracted_text?: string | null;
+          structured_data?: Json | null;
           processing_started_at?: string | null;
           processing_completed_at?: string | null;
           error_message?: string | null;
-          ai_model_used?: string | null;
-          ai_tokens_used?: number | null;
-          ai_processing_time_ms?: number | null;
           created_at?: string;
           updated_at?: string;
           deleted_at?: string | null;
@@ -102,46 +94,197 @@ export interface Database {
         Update: {
           id?: string;
           user_id?: string;
-          input_resume_filename?: string;
-          input_resume_storage_path?: string | null;
-          input_job_description?: string;
-          output_optimized_resume?: string | null;
-          storage_path_docx?: string | null;
-          status?: OptimizationStatus;
-          stripe_payment_id?: string | null;
-          stripe_payment_status?: string | null;
+          filename?: string;
+          content_type?: string;
+          file_size?: number;
+          storage_path?: string;
+          status?: ResumeStatus;
+          extracted_text?: string | null;
+          structured_data?: Json | null;
           processing_started_at?: string | null;
           processing_completed_at?: string | null;
           error_message?: string | null;
-          ai_model_used?: string | null;
-          ai_tokens_used?: number | null;
-          ai_processing_time_ms?: number | null;
           created_at?: string;
           updated_at?: string;
           deleted_at?: string | null;
         };
         Relationships: [
           {
-            foreignKeyName: 'optimizations_user_id_fkey';
+            foreignKeyName: 'resumes_user_id_fkey';
             columns: ['user_id'];
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
         ];
       };
+      jobs: {
+        Row: {
+          id: string;
+          user_id: string;
+          job_title: string | null;
+          company: string | null;
+          job_description: string;
+          structured_data: Json | null;
+          processing_started_at: string | null;
+          processing_completed_at: string | null;
+          error_message: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          job_title?: string | null;
+          company?: string | null;
+          job_description: string;
+          structured_data?: Json | null;
+          processing_started_at?: string | null;
+          processing_completed_at?: string | null;
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          job_title?: string | null;
+          company?: string | null;
+          job_description?: string;
+          structured_data?: Json | null;
+          processing_started_at?: string | null;
+          processing_completed_at?: string | null;
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'jobs_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      resume_improvements: {
+        Row: {
+          id: string;
+          resume_id: string;
+          job_id: string;
+          user_id: string;
+          status: ResumeStatus;
+          match_percentage: number | null;
+          suggestions: Json | null;
+          keywords: Json | null;
+          optimized_content: string | null;
+          docx_storage_path: string | null;
+          payment_intent_id: string;
+          payment_verified: boolean;
+          payment_verified_at: string | null;
+          processing_started_at: string | null;
+          processing_completed_at: string | null;
+          ai_model: string | null;
+          tokens_used: number | null;
+          processing_time_ms: number | null;
+          error_message: string | null;
+          retry_count: number;
+          data_anonymized: boolean;
+          anonymized_at: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          resume_id: string;
+          job_id: string;
+          user_id: string;
+          status?: ResumeStatus;
+          match_percentage?: number | null;
+          suggestions?: Json | null;
+          keywords?: Json | null;
+          optimized_content?: string | null;
+          docx_storage_path?: string | null;
+          payment_intent_id: string;
+          payment_verified?: boolean;
+          payment_verified_at?: string | null;
+          processing_started_at?: string | null;
+          processing_completed_at?: string | null;
+          ai_model?: string | null;
+          tokens_used?: number | null;
+          processing_time_ms?: number | null;
+          error_message?: string | null;
+          retry_count?: number;
+          data_anonymized?: boolean;
+          anonymized_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          resume_id?: string;
+          job_id?: string;
+          user_id?: string;
+          status?: ResumeStatus;
+          match_percentage?: number | null;
+          suggestions?: Json | null;
+          keywords?: Json | null;
+          optimized_content?: string | null;
+          docx_storage_path?: string | null;
+          payment_intent_id?: string;
+          payment_verified?: boolean;
+          payment_verified_at?: string | null;
+          processing_started_at?: string | null;
+          processing_completed_at?: string | null;
+          ai_model?: string | null;
+          tokens_used?: number | null;
+          processing_time_ms?: number | null;
+          error_message?: string | null;
+          retry_count?: number;
+          data_anonymized?: boolean;
+          anonymized_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'resume_improvements_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'resume_improvements_resume_id_fkey';
+            columns: ['resume_id'];
+            referencedRelation: 'resumes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'resume_improvements_job_id_fkey';
+            columns: ['job_id'];
+            referencedRelation: 'jobs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
-      optimization_analytics: {
+      improvement_analytics: {
         Row: {
           user_id: string;
-          total_optimizations: number;
+          total_improvements: number;
           completed_count: number;
           failed_count: number;
           processing_count: number;
           total_tokens_used: number | null;
           avg_processing_time_ms: number | null;
-          last_optimization_date: string | null;
-          first_optimization_date: string | null;
+          last_improvement_date: string | null;
+          first_improvement_date: string | null;
         };
       };
     };
@@ -154,7 +297,7 @@ export interface Database {
         Args: Record<string, never>;
         Returns: void;
       };
-      soft_delete_optimization: {
+      soft_delete_improvement: {
         Args: Record<string, never>;
         Returns: void;
       };
@@ -164,7 +307,7 @@ export interface Database {
       };
     };
     Enums: {
-      optimization_status: OptimizationStatus;
+      resume_status: ResumeStatus;
     };
   };
 }
@@ -173,13 +316,7 @@ export interface Database {
 // ENUMS
 // =====================================================
 
-export type OptimizationStatus =
-  | 'pending_payment'
-  | 'payment_processing'
-  | 'processing'
-  | 'completed'
-  | 'failed'
-  | 'cancelled';
+export type ResumeStatus = 'uploaded' | 'processing' | 'completed' | 'failed';
 
 // =====================================================
 // HELPER TYPES
@@ -204,11 +341,19 @@ export type Profile = Tables<'profiles'>;
 export type ProfileInsert = Inserts<'profiles'>;
 export type ProfileUpdate = Updates<'profiles'>;
 
-export type Optimization = Tables<'optimizations'>;
-export type OptimizationInsert = Inserts<'optimizations'>;
-export type OptimizationUpdate = Updates<'optimizations'>;
+export type Resume = Tables<'resumes'>;
+export type ResumeInsert = Inserts<'resumes'>;
+export type ResumeUpdate = Updates<'resumes'>;
 
-export type OptimizationAnalytics = Database['public']['Views']['optimization_analytics']['Row'];
+export type Job = Tables<'jobs'>;
+export type JobInsert = Inserts<'jobs'>;
+export type JobUpdate = Updates<'jobs'>;
+
+export type ResumeImprovement = Tables<'resume_improvements'>;
+export type ResumeImprovementInsert = Inserts<'resume_improvements'>;
+export type ResumeImprovementUpdate = Updates<'resume_improvements'>;
+
+export type ImprovementAnalytics = Database['public']['Views']['improvement_analytics']['Row'];
 
 // =====================================================
 // STORAGE BUCKET TYPES
@@ -232,26 +377,50 @@ export interface OptimizedResumeBucketFile {
 // API RESPONSE TYPES
 // =====================================================
 
-export interface OptimizationCreateRequest {
-  resumeFilename: string;
-  resumeStoragePath: string;
-  jobDescription: string;
+export interface ResumeUploadResponse {
+  message: string;
+  requestId: string;
+  resumeId: string;
 }
 
-export interface OptimizationCreateResponse {
-  optimizationId: string;
-  checkoutUrl: string;
-  status: OptimizationStatus;
+export interface JobCreateResponse {
+  message: string;
+  jobId: string;
+  request: {
+    requestId: string;
+    payload: any;
+  };
 }
 
-export interface OptimizationStatusResponse {
+export interface ResumeImprovementResponse {
+  requestId: string;
+  success: boolean;
+  message: string;
+  data: {
+    resumeId: string;
+    jobId: string;
+    status: ResumeStatus;
+    optimizedContent?: string;
+    matchPercentage?: number;
+    suggestions?: string[];
+    keywords?: string[];
+  };
+}
+
+export interface ResumeImprovementStatusResponse {
   id: string;
-  status: OptimizationStatus;
-  optimizedText: string | null;
-  downloadUrl: string | null;
+  resumeId: string;
+  jobId: string;
+  status: ResumeStatus;
+  optimizedContent: string | null;
+  docxStoragePath: string | null;
+  matchPercentage: number | null;
+  suggestions: string[] | null;
+  keywords: string[] | null;
   errorMessage: string | null;
   createdAt: string;
-  completedAt: string | null;
+  processingStartedAt: string | null;
+  processingCompletedAt: string | null;
 }
 
 // =====================================================

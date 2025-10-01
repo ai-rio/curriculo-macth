@@ -1,8 +1,7 @@
 'use client';
 
-import { Upload, FileText, X, CheckCircle2, AlertCircle } from 'lucide-react';
-import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { AlertCircle, CheckCircle2, FileText, Upload, X } from 'lucide-react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,66 +16,80 @@ interface ResumeUploadProps {
 }
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-const ACCEPTED_FILE_TYPES = {
-  'application/pdf': ['.pdf'],
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-};
+const ACCEPTED_FILE_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
 
 export function ResumeUpload({ onFileSelect, onFileRemove, disabled = false }: ResumeUploadProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[], rejectedFiles: any[]) => {
-      // Clear previous errors
-      setError(null);
+  const validateFile = (file: File): string | null => {
+    if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
+      return upload.invalidType;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return upload.tooLarge;
+    }
+    return null;
+  };
 
-      // Handle rejected files
-      if (rejectedFiles.length > 0) {
-        const rejection = rejectedFiles[0];
-        if (rejection.errors[0]?.code === 'file-too-large') {
-          setError(upload.tooLarge);
-        } else if (rejection.errors[0]?.code === 'file-invalid-type') {
-          setError(upload.invalidType);
-        } else {
-          setError(upload.error);
+  const handleFile = (file: File) => {
+    setError(null);
+
+    const validationError = validateFile(file);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    // Simulate upload progress
+    setUploadProgress(0);
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
         }
-        return;
-      }
+        return prev + 10;
+      });
+    }, 100);
 
-      // Handle accepted file
-      if (acceptedFiles.length > 0) {
-        const file = acceptedFiles[0];
+    setTimeout(() => {
+      setUploadedFile(file);
+      onFileSelect(file);
+    }, 1000);
+  };
 
-        // Simulate upload progress
-        setUploadProgress(0);
-        const interval = setInterval(() => {
-          setUploadProgress((prev) => {
-            if (prev >= 100) {
-              clearInterval(interval);
-              return 100;
-            }
-            return prev + 10;
-          });
-        }, 100);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleFile(file);
+    }
+  };
 
-        setTimeout(() => {
-          setUploadedFile(file);
-          onFileSelect(file);
-        }, 1000);
-      }
-    },
-    [onFileSelect]
-  );
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(true);
+  };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: ACCEPTED_FILE_TYPES,
-    maxFiles: 1,
-    maxSize: MAX_FILE_SIZE,
-    disabled: disabled || uploadedFile !== null,
-  });
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      handleFile(file);
+    }
+  };
 
   const handleRemoveFile = () => {
     setUploadedFile(null);
@@ -84,10 +97,6 @@ export function ResumeUpload({ onFileSelect, onFileRemove, disabled = false }: R
     setError(null);
     onFileRemove();
   };
-
-  // Extract root props and handle them separately to avoid type issues
-  const rootProps = getRootProps();
-  const { ref, ...rootPropsRest } = rootProps as any;
 
   return (
     <Card>
@@ -99,27 +108,37 @@ export function ResumeUpload({ onFileSelect, onFileRemove, disabled = false }: R
         {!uploadedFile ? (
           <>
             <div
-              {...rootPropsRest}
-              ref={ref}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
               className={`
                 border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-                ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'}
+                ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'}
                 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-primary hover:bg-primary/5'}
               `}
             >
-              <input {...getInputProps()} />
-              <div className="flex flex-col items-center gap-4">
-                <Upload className="w-12 h-12 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">{upload.dragDrop}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{upload.formats}</p>
+              <input
+                type="file"
+                accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={handleFileChange}
+                disabled={disabled}
+                className="hidden"
+                id="resume-file-input"
+              />
+              <label htmlFor="resume-file-input" className="cursor-pointer">
+                <div className="flex flex-col items-center gap-4">
+                  <Upload className="w-12 h-12 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium">{upload.dragDrop}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{upload.formats}</p>
+                  </div>
+                  {!disabled && (
+                    <Button type="button" variant="outline" size="sm">
+                      {upload.button}
+                    </Button>
+                  )}
                 </div>
-                {!disabled && (
-                  <Button type="button" variant="outline" size="sm">
-                    {upload.button}
-                  </Button>
-                )}
-              </div>
+              </label>
             </div>
 
             {uploadProgress > 0 && uploadProgress < 100 && (

@@ -12,24 +12,25 @@ from fastapi import (
     UploadFile,
     status,
 )
-from fastapi.responses import JSONResponse, StreamingResponse
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.responses import JSONResponse
 
 from app.core import get_db_session
+from app.core.database import SupabaseSession
 from app.schemas.pydantic import ResumeImprovementRequest
 from app.services import (
     JobKeywordExtractionError,
     JobNotFoundError,
     JobParsingError,
+    PaidResumeImprovementService,
+    PaymentVerificationError,
     ResumeKeywordExtractionError,
     ResumeNotFoundError,
     ResumeParsingError,
     ResumeService,
     ResumeValidationError,
-    ScoreImprovementService,
 )
 
-resume_router = APIRouter()
+resume_router = APIRouter(prefix="/resumes", tags=["resumes"])
 logger = logging.getLogger(__name__)
 
 
@@ -40,7 +41,7 @@ logger = logging.getLogger(__name__)
 async def upload_resume(
     request: Request,
     file: UploadFile = File(...),
-    db: AsyncSession = Depends(get_db_session),
+    db: SupabaseSession = Depends(get_db_session),
 ):
     """
     Accepts a PDF or DOCX file, converts it to HTML/Markdown, and stores it in the database.
@@ -98,81 +99,110 @@ async def upload_resume(
 
 @resume_router.post(
     "/improve",
-    summary="Score and improve a resume against a job description",
+    summary="Optimize a resume against a job description (requires payment verification)",
 )
-async def score_and_improve(
+async def improve_resume_paid(
     request: Request,
     payload: ResumeImprovementRequest,
-    db: AsyncSession = Depends(get_db_session),
-    stream: bool = Query(False, description="Enable streaming response using Server-Sent Events"),
+    db: SupabaseSession = Depends(get_db_session),
 ):
     """
-    Scores and improves a resume against a job description.
+    Optimizes a resume against a job description using AI after verifying payment.
+
+    This endpoint requires a successful Stripe payment (payment_intent_id with "succeeded" status).
+    It uses OpenRouter AI to optimize the resume and generates a downloadable DOCX file.
+
+    Args:
+        request: FastAPI request object
+        payload: Request containing resume_id, job_id, and payment_intent_id
+        db: Database session
+
+    Returns:
+        JSON response with optimized resume content and download information
 
     Raises:
-        HTTPException: If the resume or job is not found.
+        HTTPException: If payment verification fails, resume/job not found, or processing fails
     """
     request_id = getattr(request.state, "request_id", str(uuid4()))
     headers = {"X-Request-ID": request_id}
 
-    request_payload = payload.model_dump()
-
     try:
-        resume_id = str(request_payload.get("resume_id", ""))
-        if not resume_id:
-            raise ResumeNotFoundError(
-                message="invalid value passed in `resume_id` field, please try again with valid resume_id."
-            )
-        job_id = str(request_payload.get("job_id", ""))
-        if not job_id:
-            raise JobNotFoundError(
-                message="invalid value passed in `job_id` field, please try again with valid job_id."
-            )
-        score_improvement_service = ScoreImprovementService(db=db)
+        # Extract request payload
+        request_payload = payload.model_dump()
+        resume_id = request_payload.get("resume_id")
+        job_id = request_payload.get("job_id")
+        payment_intent_id = request_payload.get("payment_intent_id")
 
-        if stream:
-            return StreamingResponse(
-                content=score_improvement_service.run_and_stream(
-                    resume_id=resume_id,
-                    job_id=job_id,
-                ),
-                media_type="text/event-stream",
-                headers=headers,
+        # Validate required fields
+        if not resume_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="resume_id is required",
             )
-        else:
-            improvements = await score_improvement_service.run(
-                resume_id=resume_id,
-                job_id=job_id,
+        if not job_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="job_id is required",
             )
-            return JSONResponse(
-                content={
-                    "request_id": request_id,
-                    "data": improvements,
-                },
-                headers=headers,
+        if not payment_intent_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="payment_intent_id is required",
             )
+
+        # Get user ID from request state (set by auth middleware)
+        user_id = getattr(request.state, "user_id", None)
+
+        # Initialize paid resume improvement service
+        paid_service = PaidResumeImprovementService(db=db)
+
+        # Process the improvement with payment verification
+        result = await paid_service.improve_resume(
+            resume_id=resume_id,
+            job_id=job_id,
+            payment_intent_id=payment_intent_id,
+            user_id=user_id,
+        )
+
+        # Return successful response
+        return JSONResponse(
+            content={
+                "request_id": request_id,
+                "success": True,
+                "message": "Resume optimized successfully",
+                "data": result,
+            },
+            headers=headers,
+        )
+
+    except PaymentVerificationError as e:
+        logger.error(f"Payment verification failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail=str(e),
+        )
     except ResumeNotFoundError as e:
         logger.error(str(e))
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         )
     except JobNotFoundError as e:
         logger.error(str(e))
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         )
     except ResumeParsingError as e:
         logger.error(str(e))
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(e),
         )
     except JobParsingError as e:
         logger.error(str(e))
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(e),
         )
     except ResumeKeywordExtractionError as e:
@@ -188,10 +218,10 @@ async def score_and_improve(
             detail=str(e),
         )
     except Exception as e:
-        logger.error(f"Error: {str(e)} - traceback: {traceback.format_exc()}")
+        logger.error(f"Error in resume improvement: {str(e)} - traceback: {traceback.format_exc()}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="sorry, something went wrong!",
+            detail="An error occurred while processing your resume optimization",
         )
 
 
@@ -202,7 +232,7 @@ async def score_and_improve(
 async def get_resume(
     request: Request,
     resume_id: str = Query(..., description="Resume ID to fetch data for"),
-    db: AsyncSession = Depends(get_db_session),
+    db: SupabaseSession = Depends(get_db_session),
 ):
     """
     Retrieves resume data from both resume_model and processed_resume model by resume_id.

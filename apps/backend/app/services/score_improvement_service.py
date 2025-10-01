@@ -3,15 +3,14 @@ import gc
 import json
 import logging
 from collections.abc import AsyncGenerator
+from typing import Any
 
 import markdown
 import numpy as np
 from pydantic import ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
 from app.agent import AgentManager, EmbeddingManager
-from app.models import Job, ProcessedJob, ProcessedResume, Resume
+from app.core.database import DatabaseOperations, SupabaseSession
 from app.prompt import prompt_factory
 from app.schemas.json import json_schema_factory
 from app.schemas.pydantic import ResumePreviewerModel
@@ -36,59 +35,58 @@ class ScoreImprovementService:
     the scoring process.
     """
 
-    def __init__(self, db: AsyncSession, max_retries: int = 5):
+    def __init__(self, db: SupabaseSession, max_retries: int = 5):
         self.db = db
+        self.db_ops = DatabaseOperations(db)
         self.max_retries = max_retries
         self.md_agent_manager = AgentManager(strategy="md")
         self.json_agent_manager = AgentManager()
         self.embedding_manager = EmbeddingManager()
 
-    def _validate_resume_keywords(self, processed_resume: ProcessedResume, resume_id: str) -> None:
+    def _validate_resume_keywords(self, processed_resume: dict[str, Any], resume_id: str) -> None:
         """
         Validates that keyword extraction was successful for a resume.
         Raises ResumeKeywordExtractionError if keywords are missing or empty.
         """
-        if not processed_resume.extracted_keywords:
+        if not processed_resume.get("extracted_keywords"):
             raise ResumeKeywordExtractionError(resume_id=resume_id)
 
         try:
-            keywords_data = json.loads(processed_resume.extracted_keywords)
+            keywords_data = processed_resume.get("extracted_keywords", {})
             keywords = keywords_data.get("extracted_keywords", [])
             if not keywords or len(keywords) == 0:
                 raise ResumeKeywordExtractionError(resume_id=resume_id)
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, AttributeError):
             raise ResumeKeywordExtractionError(resume_id=resume_id)
 
-    def _validate_job_keywords(self, processed_job: ProcessedJob, job_id: str) -> None:
+    def _validate_job_keywords(self, processed_job: dict[str, Any], job_id: str) -> None:
         """
         Validates that keyword extraction was successful for a job.
         Raises JobKeywordExtractionError if keywords are missing or empty.
         """
-        if not processed_job.extracted_keywords:
+        if not processed_job.get("extracted_keywords"):
             raise JobKeywordExtractionError(job_id=job_id)
 
         try:
-            keywords_data = json.loads(processed_job.extracted_keywords)
+            keywords_data = processed_job.get("extracted_keywords", {})
             keywords = keywords_data.get("extracted_keywords", [])
             if not keywords or len(keywords) == 0:
                 raise JobKeywordExtractionError(job_id=job_id)
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, AttributeError):
             raise JobKeywordExtractionError(job_id=job_id)
 
-    async def _get_resume(self, resume_id: str) -> tuple[Resume | None, ProcessedResume | None]:
+    async def _get_resume(self, resume_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
         """
         Fetches the resume from the database.
         """
-        query = select(Resume).where(Resume.resume_id == resume_id)
-        result = await self.db.execute(query)
-        resume = result.scalars().first()
+        # Fetch resume using Supabase
+        resume = await self.db_ops.select_by_id("resumes", "resume_id", resume_id)
 
         if not resume:
             raise ResumeNotFoundError(resume_id=resume_id)
 
-        query = select(ProcessedResume).where(ProcessedResume.resume_id == resume_id)
-        result = await self.db.execute(query)
-        processed_resume = result.scalars().first()
+        # Fetch processed resume using Supabase
+        processed_resume = await self.db_ops.select_by_id("processed_resumes", "resume_id", resume_id)
 
         if not processed_resume:
             raise ResumeParsingError(resume_id=resume_id)
@@ -97,20 +95,18 @@ class ScoreImprovementService:
 
         return resume, processed_resume
 
-    async def _get_job(self, job_id: str) -> tuple[Job | None, ProcessedJob | None]:
+    async def _get_job(self, job_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
         """
         Fetches the job from the database.
         """
-        query = select(Job).where(Job.job_id == job_id)
-        result = await self.db.execute(query)
-        job = result.scalars().first()
+        # Fetch job using Supabase
+        job = await self.db_ops.select_by_id("jobs", "job_id", job_id)
 
         if not job:
             raise JobNotFoundError(job_id=job_id)
 
-        query = select(ProcessedJob).where(ProcessedJob.job_id == job_id)
-        result = await self.db.execute(query)
-        processed_job = result.scalars().first()
+        # Fetch processed job using Supabase
+        processed_job = await self.db_ops.select_by_id("processed_jobs", "job_id", job_id)
 
         if not processed_job:
             raise JobParsingError(job_id=job_id)
@@ -158,7 +154,7 @@ class ScoreImprovementService:
             )
             improved = await self.md_agent_manager.run(prompt)
             emb = await self.embedding_manager.embed(text=improved)
-            score = self.calculate_cosine_similarity(emb, extracted_job_keywords_embedding)
+            score = self.calculate_cosine_similarity(np.array(emb), extracted_job_keywords_embedding)
 
             if score > best_score:
                 return improved, score
@@ -183,7 +179,7 @@ class ScoreImprovementService:
             resume_preview: ResumePreviewerModel = ResumePreviewerModel.model_validate(raw_output)
         except ValidationError as e:
             logger.info(f"Validation error: {e}")
-            return None
+            return {}
         return resume_preview.model_dump()
 
     async def run(self, resume_id: str, job_id: str) -> dict:
@@ -194,23 +190,25 @@ class ScoreImprovementService:
         resume, processed_resume = await self._get_resume(resume_id)
         job, processed_job = await self._get_job(job_id)
 
-        extracted_job_keywords = ", ".join(json.loads(processed_job.extracted_keywords).get("extracted_keywords", []))
+        extracted_job_keywords = ", ".join(processed_job.get("extracted_keywords", {}).get("extracted_keywords", []))
 
         extracted_resume_keywords = ", ".join(
-            json.loads(processed_resume.extracted_keywords).get("extracted_keywords", [])
+            processed_resume.get("extracted_keywords", {}).get("extracted_keywords", [])
         )
 
-        resume_embedding_task = asyncio.create_task(self.embedding_manager.embed(resume.content))
+        resume_embedding_task = asyncio.create_task(self.embedding_manager.embed(resume["content"]))
         job_kw_embedding_task = asyncio.create_task(self.embedding_manager.embed(extracted_job_keywords))
         resume_embedding, extracted_job_keywords_embedding = await asyncio.gather(
             resume_embedding_task, job_kw_embedding_task
         )
 
-        cosine_similarity_score = self.calculate_cosine_similarity(extracted_job_keywords_embedding, resume_embedding)
+        cosine_similarity_score = self.calculate_cosine_similarity(
+            extracted_job_keywords_embedding, np.array(resume_embedding)
+        )
         updated_resume, updated_score = await self.improve_score_with_llm(
-            resume=resume.content,
+            resume=resume["content"],
             extracted_resume_keywords=extracted_resume_keywords,
-            job=job.content,
+            job=job["content"],
             extracted_job_keywords=extracted_job_keywords,
             previous_cosine_similarity_score=cosine_similarity_score,
             extracted_job_keywords_embedding=extracted_job_keywords_embedding,
@@ -247,19 +245,21 @@ class ScoreImprovementService:
         yield f"data: {json.dumps({'status': 'parsing', 'message': 'Parsing resume content...'})}\n\n"
         await asyncio.sleep(2)
 
-        extracted_job_keywords = ", ".join(json.loads(processed_job.extracted_keywords).get("extracted_keywords", []))
+        extracted_job_keywords = ", ".join(processed_job.get("extracted_keywords", {}).get("extracted_keywords", []))
 
         extracted_resume_keywords = ", ".join(
-            json.loads(processed_resume.extracted_keywords).get("extracted_keywords", [])
+            processed_resume.get("extracted_keywords", {}).get("extracted_keywords", [])
         )
 
-        resume_embedding = await self.embedding_manager.embed(text=resume.content)
+        resume_embedding = await self.embedding_manager.embed(text=resume["content"])
         extracted_job_keywords_embedding = await self.embedding_manager.embed(text=extracted_job_keywords)
 
         yield f"data: {json.dumps({'status': 'scoring', 'message': 'Calculating compatibility score...'})}\n\n"
         await asyncio.sleep(3)
 
-        cosine_similarity_score = self.calculate_cosine_similarity(extracted_job_keywords_embedding, resume_embedding)
+        cosine_similarity_score = self.calculate_cosine_similarity(
+            extracted_job_keywords_embedding, np.array(resume_embedding)
+        )
 
         yield f"data: {json.dumps({'status': 'scored', 'score': cosine_similarity_score})}\n\n"
 
@@ -267,17 +267,20 @@ class ScoreImprovementService:
         await asyncio.sleep(3)
 
         updated_resume, updated_score = await self.improve_score_with_llm(
-            resume=resume.content,
+            resume=resume["content"],
             extracted_resume_keywords=extracted_resume_keywords,
-            job=job.content,
+            job=job["content"],
             extracted_job_keywords=extracted_job_keywords,
             previous_cosine_similarity_score=cosine_similarity_score,
             extracted_job_keywords_embedding=extracted_job_keywords_embedding,
         )
 
-        for i, suggestion in enumerate(updated_resume):
-            yield f"data: {json.dumps({'status': 'suggestion', 'index': i, 'text': suggestion})}\n\n"
-            await asyncio.sleep(0.2)
+        # Split the improved resume into paragraphs for streaming
+        suggestions = updated_resume.split("\n\n")
+        for i, suggestion in enumerate(suggestions):
+            if suggestion.strip():  # Only send non-empty suggestions
+                yield f"data: {json.dumps({'status': 'suggestion', 'index': i, 'text': suggestion})}\n\n"
+                await asyncio.sleep(0.2)
 
         final_result = {
             "resume_id": resume_id,

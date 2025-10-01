@@ -7,13 +7,13 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, Loader2 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PaymentAPI } from '@/lib/api/payments';
 import { translations } from '@/lib/i18n';
 
@@ -22,38 +22,56 @@ export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [optimizationId, setOptimizationId] = useState<string | null>(null);
+  const [improvementId, setImprovementId] = useState<string | null>(null);
+  const [processingStarted, setProcessingStarted] = useState(false);
 
   useEffect(() => {
-    const verifyPayment = async () => {
-      const sessionId = searchParams.get('session_id');
+    const verifyPaymentAndProcess = async () => {
+      const paymentIntentId = searchParams.get('payment_intent_id');
+      const resumeId = searchParams.get('resume_id');
+      const jobId = searchParams.get('job_id');
 
-      if (!sessionId) {
-        setError('ID da sessão não encontrado');
+      // Try to get IDs from session storage if not in URL params
+      const storedResumeId = sessionStorage.getItem('pending_resume_id');
+      const storedJobId = sessionStorage.getItem('pending_job_id');
+      const storedPaymentIntentId = sessionStorage.getItem('pending_payment_intent_id');
+
+      const finalResumeId = resumeId || storedResumeId;
+      const finalJobId = jobId || storedJobId;
+      const finalPaymentIntentId = paymentIntentId || storedPaymentIntentId;
+
+      if (!finalPaymentIntentId || !finalResumeId || !finalJobId) {
+        setError('Informações de pagamento não encontradas');
         setVerifying(false);
         return;
       }
 
       try {
-        // Get session details to extract optimization_id from metadata
-        const sessionDetails = await PaymentAPI.getSessionDetails(sessionId);
-
-        const optId = sessionDetails.metadata.optimization_id;
-
-        if (!optId) {
-          setError('ID da otimização não encontrado');
-          setVerifying(false);
-          return;
-        }
-
-        // Verify payment and update optimization status
-        const result = await PaymentAPI.verifyPayment({
-          session_id: sessionId,
-          optimization_id: optId,
+        // Verify payment was successful
+        const verificationResult = await PaymentAPI.verifyPayment({
+          payment_intent_id: finalPaymentIntentId,
+          resume_id: finalResumeId,
+          job_id: finalJobId,
         });
 
-        if (result.success) {
-          setOptimizationId(result.optimization_id);
+        if (verificationResult.success) {
+          // Payment verified, now process the resume improvement
+          const improvementResult = await PaymentAPI.processImprovement({
+            resume_id: finalResumeId,
+            job_id: finalJobId,
+            payment_intent_id: finalPaymentIntentId,
+          });
+
+          if (improvementResult.success) {
+            setImprovementId(improvementResult.improvement_id);
+            setProcessingStarted(true);
+            // Clear session storage
+            sessionStorage.removeItem('pending_resume_id');
+            sessionStorage.removeItem('pending_job_id');
+            sessionStorage.removeItem('pending_payment_intent_id');
+          } else {
+            setError('Falha ao iniciar o processamento da otimização');
+          }
         } else {
           setError('Falha na verificação do pagamento');
         }
@@ -64,7 +82,7 @@ export default function PaymentSuccessPage() {
       }
     };
 
-    verifyPayment();
+    verifyPaymentAndProcess();
   }, [searchParams]);
 
   if (verifying) {
@@ -77,7 +95,7 @@ export default function PaymentSuccessPage() {
             </div>
             <CardTitle className="text-center">Verificando Pagamento</CardTitle>
             <CardDescription className="text-center">
-              Aguarde enquanto confirmamos seu pagamento...
+              Aguarde enquanto confirmamos seu pagamento e iniciamos a otimização...
             </CardDescription>
           </CardHeader>
         </Card>
@@ -121,15 +139,15 @@ export default function PaymentSuccessPage() {
         <CardContent className="space-y-4">
           <div className="bg-muted p-4 rounded-lg">
             <p className="text-sm text-muted-foreground">
-              <strong>ID da Otimização:</strong> {optimizationId}
+              <strong>ID da Otimização:</strong> {improvementId}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              <strong>Status:</strong> Processando
+              <strong>Status:</strong> {processingStarted ? 'Processando' : 'Aguardando'}
             </p>
           </div>
 
           <div className="flex flex-col space-y-2">
-            <Button onClick={() => router.push(`/dashboard/optimizations/${optimizationId}`)}>
+            <Button onClick={() => router.push(`/results/${improvementId}`)}>
               Ver Status da Otimização
             </Button>
             <Button variant="outline" onClick={() => router.push('/dashboard')}>

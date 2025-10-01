@@ -5,7 +5,7 @@ from fastapi.concurrency import run_in_threadpool
 from llama_index.core.base.embeddings.base import BaseEmbedding
 from llama_index.core.base.llms.base import BaseLLM
 
-from ...core import settings
+from ...core.config import settings
 from ..exceptions import ProviderError
 from .base import EmbeddingProvider, Provider
 
@@ -32,10 +32,10 @@ def _get_real_provider(provider_name):
 class LlamaIndexProvider(Provider):
     def __init__(
         self,
-        api_key: str = settings.LLM_API_KEY,
-        api_base_url: str = settings.LLM_BASE_URL,
-        model_name: str = settings.LL_MODEL,
-        provider: str = settings.LLM_PROVIDER,
+        api_key: str = settings.LLM_API_KEY or "",
+        api_base_url: str = settings.LLM_BASE_URL or "",
+        model_name: str = settings.LL_MODEL or "",
+        provider: str = settings.LLM_PROVIDER or "",
         opts: dict[str, Any] = None,
     ):
         if opts is None:
@@ -91,10 +91,10 @@ class LlamaIndexProvider(Provider):
 class LlamaIndexEmbeddingProvider(EmbeddingProvider):
     def __init__(
         self,
-        embedding_model: str = settings.EMBEDDING_MODEL,
-        api_key: str = settings.EMBEDDING_API_KEY,
-        api_base_url: str = settings.EMBEDDING_BASE_URL,
-        provider: str = settings.EMBEDDING_PROVIDER,
+        embedding_model: str = settings.EMBEDDING_MODEL or "",
+        api_key: str = settings.EMBEDDING_API_KEY or "",
+        api_base_url: str = settings.EMBEDDING_BASE_URL or "",
+        provider: str = settings.EMBEDDING_PROVIDER or "",
     ):
         self._model = embedding_model
         self._provider = provider

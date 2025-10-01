@@ -7,44 +7,69 @@ import { api } from '../api';
 /**
  * Request types
  */
-export interface CreateCheckoutRequest {
-  optimization_id: string;
+export interface CreatePaymentIntentRequest {
+  resume_id: string;
+  job_id: string;
   user_id: string;
   user_email: string;
   success_url: string;
   cancel_url: string;
   amount?: number; // Default: 5000 (R$ 50.00)
+  currency?: string; // Default: 'brl'
+}
+
+export interface ProcessImprovementRequest {
+  resume_id: string;
+  job_id: string;
+  payment_intent_id: string;
 }
 
 export interface VerifyPaymentRequest {
-  session_id: string;
-  optimization_id: string;
+  payment_intent_id: string;
+  resume_id: string;
+  job_id: string;
 }
 
 /**
  * Response types
  */
-export interface CreateCheckoutResponse {
-  session_id: string;
-  checkout_url: string;
-  expires_at: number;
+export interface CreatePaymentIntentResponse {
+  client_secret: string;
+  payment_intent_id: string;
+  amount: number;
+  currency: string;
+}
+
+export interface ProcessImprovementResponse {
+  success: boolean;
+  improvement_id: string;
+  status: string;
+  message: string;
+  data?: {
+    optimized_content?: string;
+    match_percentage?: number;
+    suggestions?: string[];
+    keywords?: string[];
+  };
 }
 
 export interface VerifyPaymentResponse {
   success: boolean;
-  optimization_id: string;
+  payment_intent_id: string;
   status: string;
   amount_paid: number;
   currency: string;
+  improvement_id?: string;
 }
 
-export interface SessionDetailsResponse {
-  payment_status: string;
-  status: string;
-  amount_total: number;
+export interface PaymentIntentDetailsResponse {
+  id: string;
+  amount: number;
   currency: string;
-  customer_email: string | null;
-  payment_intent: string | null;
+  status: string;
+  payment_method: string | null;
+  client_secret: string;
+  created: number;
   metadata: Record<string, string>;
 }
 
@@ -53,10 +78,21 @@ export interface SessionDetailsResponse {
  */
 export class PaymentAPI {
   /**
-   * Create a Stripe Checkout session
+   * Create a Stripe Payment Intent
    */
-  static async createCheckoutSession(data: CreateCheckoutRequest): Promise<CreateCheckoutResponse> {
-    return api.post<CreateCheckoutResponse>('/api/v1/payments/create-checkout', data);
+  static async createPaymentIntent(
+    data: CreatePaymentIntentRequest
+  ): Promise<CreatePaymentIntentResponse> {
+    return api.post<CreatePaymentIntentResponse>('/api/v1/payments/create-intent', data);
+  }
+
+  /**
+   * Process resume improvement after successful payment
+   */
+  static async processImprovement(
+    data: ProcessImprovementRequest
+  ): Promise<ProcessImprovementResponse> {
+    return api.post<ProcessImprovementResponse>('/api/v1/resumes/improve', data);
   }
 
   /**
@@ -67,9 +103,11 @@ export class PaymentAPI {
   }
 
   /**
-   * Get checkout session details
+   * Get payment intent details
    */
-  static async getSessionDetails(sessionId: string): Promise<SessionDetailsResponse> {
-    return api.get<SessionDetailsResponse>(`/api/v1/payments/session/${sessionId}`);
+  static async getPaymentIntentDetails(
+    paymentIntentId: string
+  ): Promise<PaymentIntentDetailsResponse> {
+    return api.get<PaymentIntentDetailsResponse>(`/api/v1/payments/intent/${paymentIntentId}`);
   }
 }

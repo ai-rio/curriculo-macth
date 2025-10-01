@@ -1,35 +1,36 @@
 /**
- * CheckoutButton Component
+ * PaymentButton Component
  *
- * Stripe Checkout button for résumé optimization payment (R$ 50.00)
- * Handles payment flow and redirects to Stripe Checkout
+ * Stripe payment button for résumé optimization payment (R$ 50.00)
+ * Handles payment flow using Payment Intents (unified system)
  */
 
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { PaymentAPI } from '@/lib/api/payments';
 import { translations } from '@/lib/i18n';
 import { getStripe } from '@/lib/stripe';
 import { createBrowserClient } from '@/lib/supabase/client';
 
-interface CheckoutButtonProps {
-  optimizationId: string;
-  onSuccess?: () => void;
+interface PaymentButtonProps {
+  resumeId: string;
+  jobId: string;
+  onSuccess?: (paymentIntentId: string) => void;
   onError?: (error: string) => void;
 }
 
-export function CheckoutButton({ optimizationId, onSuccess, onError }: CheckoutButtonProps) {
+export function PaymentButton({ resumeId, jobId, onSuccess, onError }: PaymentButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleCheckout = async () => {
+  const handlePayment = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -48,36 +49,45 @@ export function CheckoutButton({ optimizationId, onSuccess, onError }: CheckoutB
 
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-      // Create checkout session
-      const checkoutSession = await PaymentAPI.createCheckoutSession({
-        optimization_id: optimizationId,
+      // Create payment intent
+      const paymentIntent = await PaymentAPI.createPaymentIntent({
+        resume_id: resumeId,
+        job_id: jobId,
         user_id: session.user.id,
         user_email: session.user.email!,
-        success_url: `${siteUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${siteUrl}/payment/success?payment_intent_id={PAYMENT_INTENT_ID}&resume_id=${resumeId}&job_id=${jobId}`,
         cancel_url: `${siteUrl}/payment/cancelled`,
         amount: 5000, // R$ 50.00
+        currency: 'brl',
       });
 
-      // Load Stripe and redirect to checkout
+      // Store IDs for use after payment
+      sessionStorage.setItem('pending_resume_id', resumeId);
+      sessionStorage.setItem('pending_job_id', jobId);
+      sessionStorage.setItem('pending_payment_intent_id', paymentIntent.payment_intent_id);
+
+      // Load Stripe
       const stripe = await getStripe();
 
       if (!stripe) {
         throw new Error('Stripe não pôde ser carregado');
       }
 
-      // Redirect to Stripe Checkout
-      const { error: stripeError } = await stripe.redirectToCheckout({
-        sessionId: checkoutSession.session_id,
+      // Confirm payment on client side
+      const { error: stripeError } = await stripe.confirmPayment({
+        clientSecret: paymentIntent.client_secret,
+        confirmParams: {
+          return_url: `${siteUrl}/payment/success?payment_intent_id=${paymentIntent.payment_intent_id}&resume_id=${resumeId}&job_id=${jobId}`,
+        },
       });
 
       if (stripeError) {
         throw new Error(stripeError.message);
       }
 
-      onSuccess?.();
+      onSuccess?.(paymentIntent.payment_intent_id);
     } catch (err: any) {
-      const errorMessage =
-        err?.detail || err?.message || translations.payment.errors.checkoutFailed;
+      const errorMessage = err?.detail || err?.message || translations.payment.errors.paymentFailed;
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -88,7 +98,7 @@ export function CheckoutButton({ optimizationId, onSuccess, onError }: CheckoutB
   return (
     <div className="space-y-4">
       <Button
-        onClick={handleCheckout}
+        onClick={handlePayment}
         disabled={loading}
         className="w-full"
         size="lg"

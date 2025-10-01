@@ -9,22 +9,21 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .api import RequestIDMiddleware, health_check, v1_router
 from .core import (
-    async_engine,
     custom_http_exception_handler,
+    init_models,
     settings,
     setup_logging,
     unhandled_exception_handler,
     validation_exception_handler,
 )
-from .models import Base
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Initialize database models (for Supabase, this is a no-op)
+    await init_models()
     yield
-    await async_engine.dispose()
+    # No cleanup needed for Supabase connection
 
 
 def create_app() -> FastAPI:

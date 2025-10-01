@@ -3,9 +3,14 @@
  * Handles authentication, error handling, and type safety
  */
 
-import { ApiError, createApiError, ErrorCode, HttpStatus, isApiError } from '@repo/shared-types';
-
 import { createBrowserClient } from '@/lib/supabase/client';
+
+// Simple error interface instead of @repo/shared-types
+interface ApiError {
+  message: string;
+  code?: string;
+  status?: number;
+}
 
 /**
  * API Client class for making HTTP requests
@@ -45,17 +50,15 @@ class ApiClient {
       errorData = await response.json();
     } catch {
       // If response is not JSON, create a generic error
-      errorData = createApiError(ErrorCode.INTERNAL_SERVER_ERROR, response.status);
+      errorData = {
+        message: 'Erro desconhecido do servidor',
+        status: response.status,
+      };
     }
 
-    // Ensure error has correct structure
-    if (!isApiError(errorData)) {
-      errorData = createApiError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        response.status,
-        undefined,
-        'Erro desconhecido do servidor'
-      );
+    // Ensure error has message
+    if (!errorData.message) {
+      errorData.message = 'Erro desconhecido do servidor';
     }
 
     throw errorData;
@@ -145,7 +148,7 @@ class ApiClient {
     }
 
     // Handle 204 No Content
-    if (response.status === HttpStatus.NO_CONTENT) {
+    if (response.status === 204) {
       return {} as T;
     }
 

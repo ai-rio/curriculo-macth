@@ -6,11 +6,9 @@ import uuid
 
 from markitdown import MarkItDown
 from pydantic import ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
 from app.agent import AgentManager
-from app.models import ProcessedResume, Resume
+from app.core.database import DatabaseOperations, SupabaseSession
 from app.prompt import prompt_factory
 from app.schemas.json import json_schema_factory
 from app.schemas.pydantic import StructuredResumeModel
@@ -21,8 +19,9 @@ logger = logging.getLogger(__name__)
 
 
 class ResumeService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: SupabaseSession):
         self.db = db
+        self.db_ops = DatabaseOperations(db)
         self.md = MarkItDown(enable_plugins=False)
         self.json_agent_manager = AgentManager()
 
@@ -111,11 +110,20 @@ class ResumeService:
         Stores the parsed resume content in the database.
         """
         resume_id = str(uuid.uuid4())
-        resume = Resume(resume_id=resume_id, content=text_content, content_type=content_type)
 
-        self.db.add(resume)
-        await self.db.flush()
-        await self.db.commit()
+        # Map short content types to full MIME types for database constraint
+        content_type_mapping = {"md": "text/markdown", "html": "text/html", "plain": "text/plain", "text": "text/plain"}
+
+        db_content_type = content_type_mapping.get(content_type, "text/markdown")
+
+        resume_data = {
+            "resume_id": resume_id,
+            "content": text_content,
+            "content_type": db_content_type,
+        }
+
+        # Insert resume using Supabase
+        await self.db_ops.insert("resumes", resume_data)
 
         return resume_id
 
@@ -132,38 +140,38 @@ class ResumeService:
                     message="Failed to extract structured data from resume. Please ensure your resume contains all required sections.",
                 )
 
-            processed_resume = ProcessedResume(
-                resume_id=resume_id,
-                personal_data=json.dumps(structured_resume.get("personal_data", {}))
-                if structured_resume.get("personal_data")
+            structured_resume_dict = structured_resume.model_dump()
+            processed_resume_data = {
+                "resume_id": resume_id,
+                "personal_data": structured_resume_dict.get("personal_data", {})
+                if structured_resume_dict.get("personal_data")
                 else None,
-                experiences=json.dumps({"experiences": structured_resume.get("experiences", [])})
-                if structured_resume.get("experiences")
+                "experiences": {"experiences": structured_resume_dict.get("experiences", [])}
+                if structured_resume_dict.get("experiences")
                 else None,
-                projects=json.dumps({"projects": structured_resume.get("projects", [])})
-                if structured_resume.get("projects")
+                "projects": {"projects": structured_resume_dict.get("projects", [])}
+                if structured_resume_dict.get("projects")
                 else None,
-                skills=json.dumps({"skills": structured_resume.get("skills", [])})
-                if structured_resume.get("skills")
+                "skills": {"skills": structured_resume_dict.get("skills", [])}
+                if structured_resume_dict.get("skills")
                 else None,
-                research_work=json.dumps({"research_work": structured_resume.get("research_work", [])})
-                if structured_resume.get("research_work")
+                "research_work": {"research_work": structured_resume_dict.get("research_work", [])}
+                if structured_resume_dict.get("research_work")
                 else None,
-                achievements=json.dumps({"achievements": structured_resume.get("achievements", [])})
-                if structured_resume.get("achievements")
+                "achievements": {"achievements": structured_resume_dict.get("achievements", [])}
+                if structured_resume_dict.get("achievements")
                 else None,
-                education=json.dumps({"education": structured_resume.get("education", [])})
-                if structured_resume.get("education")
+                "education": {"education": structured_resume_dict.get("education", [])}
+                if structured_resume_dict.get("education")
                 else None,
-                extracted_keywords=json.dumps(
-                    {"extracted_keywords": structured_resume.get("extracted_keywords", [])}
-                    if structured_resume.get("extracted_keywords")
-                    else None
-                ),
-            )
+                "extracted_keywords": {"extracted_keywords": structured_resume_dict.get("extracted_keywords", [])}
+                if structured_resume_dict.get("extracted_keywords")
+                else None,
+            }
 
-            self.db.add(processed_resume)
-            await self.db.commit()
+            # Insert processed resume using Supabase
+            await self.db_ops.insert("processed_resumes", processed_resume_data)
+
         except ResumeValidationError:
             # Re-raise validation errors to propagate to the upload endpoint
             raise
@@ -201,7 +209,7 @@ class ResumeService:
                 validation_error=user_friendly_message,
                 message=f"Resume structure validation failed: {user_friendly_message}",
             )
-        return structured_resume.model_dump()
+        return structured_resume
 
     async def get_resume_with_processed_data(self, resume_id: str) -> dict | None:
         """
@@ -216,51 +224,51 @@ class ResumeService:
         Raises:
             ResumeNotFoundError: If the resume is not found
         """
-        resume_query = select(Resume).where(Resume.resume_id == resume_id)
-        resume_result = await self.db.execute(resume_query)
-        resume = resume_result.scalars().first()
+        # Fetch resume data using Supabase
+        resume = await self.db_ops.select_by_id("resumes", "resume_id", resume_id)
 
         if not resume:
             raise ResumeNotFoundError(resume_id=resume_id)
 
-        processed_query = select(ProcessedResume).where(ProcessedResume.resume_id == resume_id)
-        processed_result = await self.db.execute(processed_query)
-        processed_resume = processed_result.scalars().first()
+        # Fetch processed resume data using Supabase
+        processed_resume = await self.db_ops.select_by_id("processed_resumes", "resume_id", resume_id)
 
         combined_data = {
-            "resume_id": resume.resume_id,
+            "resume_id": resume["resume_id"],
             "raw_resume": {
-                "id": resume.id,
-                "content": resume.content,
-                "content_type": resume.content_type,
-                "created_at": resume.created_at.isoformat() if resume.created_at else None,
+                "id": resume["id"],
+                "content": resume["content"],
+                "content_type": resume["content_type"],
+                "created_at": resume["created_at"],
             },
             "processed_resume": None,
         }
 
         if processed_resume:
             combined_data["processed_resume"] = {
-                "personal_data": json.loads(processed_resume.personal_data) if processed_resume.personal_data else None,
-                "experiences": json.loads(processed_resume.experiences).get("experiences", [])
-                if processed_resume.experiences
+                "personal_data": processed_resume.get("personal_data"),
+                "experiences": processed_resume.get("experiences", {}).get("experiences", [])
+                if processed_resume.get("experiences")
                 else None,
-                "projects": json.loads(processed_resume.projects).get("projects", [])
-                if processed_resume.projects
+                "projects": processed_resume.get("projects", {}).get("projects", [])
+                if processed_resume.get("projects")
                 else [],
-                "skills": json.loads(processed_resume.skills).get("skills", []) if processed_resume.skills else [],
-                "research_work": json.loads(processed_resume.research_work).get("research_work", [])
-                if processed_resume.research_work
+                "skills": processed_resume.get("skills", {}).get("skills", [])
+                if processed_resume.get("skills")
                 else [],
-                "achievements": json.loads(processed_resume.achievements).get("achievements", [])
-                if processed_resume.achievements
+                "research_work": processed_resume.get("research_work", {}).get("research_work", [])
+                if processed_resume.get("research_work")
                 else [],
-                "education": json.loads(processed_resume.education).get("education", [])
-                if processed_resume.education
+                "achievements": processed_resume.get("achievements", {}).get("achievements", [])
+                if processed_resume.get("achievements")
                 else [],
-                "extracted_keywords": json.loads(processed_resume.extracted_keywords).get("extracted_keywords", [])
-                if processed_resume.extracted_keywords
+                "education": processed_resume.get("education", {}).get("education", [])
+                if processed_resume.get("education")
                 else [],
-                "processed_at": processed_resume.processed_at.isoformat() if processed_resume.processed_at else None,
+                "extracted_keywords": processed_resume.get("extracted_keywords", {}).get("extracted_keywords", [])
+                if processed_resume.get("extracted_keywords")
+                else [],
+                "processed_at": processed_resume.get("processed_at"),
             }
 
         return combined_data

@@ -4,9 +4,9 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { JobDescriptionInput } from '@/components/upload/JobDescriptionInput';
 import { ResumeUpload } from '@/components/upload/ResumeUpload';
-import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { common, payment } from '@/lib/i18n';
 import { createBrowserClient as createClient } from '@/lib/supabase/client';
@@ -55,49 +55,55 @@ export default function UploadPage() {
         return;
       }
 
-      // 1. Upload resume to Supabase Storage
-      const fileExt = resumeFile!.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      // 1. Upload resume file to backend
+      const resumeUploadResponse = await api.uploadFile<{
+        message: string;
+        request_id: string;
+        resume_id: string;
+      }>('/api/v1/resumes/upload', resumeFile!);
 
-      const { error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(fileName, resumeFile!, {
-          cacheControl: '3600',
-          upsert: false,
-        });
+      const resumeId = resumeUploadResponse.resume_id;
 
-      if (uploadError) {
-        throw new Error(`Erro ao fazer upload do arquivo: ${uploadError.message}`);
-      }
-
-      // 2. Create optimization record
-      const optimizationResponse = await api.post<{ optimization_id: string; status: string }>(
-        '/api/v1/optimizations',
-        {
-          resume_storage_path: fileName,
-          resume_filename: resumeFile!.name,
-          job_description: jobDescription,
-          user_id: user.id,
-        }
-      );
-
-      const optimizationId = optimizationResponse.optimization_id;
-
-      // 3. Create Stripe checkout session
-      const checkoutResponse = await api.post<{
-        session_id: string;
-        checkout_url: string;
-      }>('/api/v1/payments/create-checkout', {
-        optimization_id: optimizationId,
-        user_id: user.id,
-        user_email: user.email,
-        success_url: `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}&optimization_id=${optimizationId}`,
-        cancel_url: `${window.location.origin}/upload?cancelled=true`,
-        amount: 5000, // R$ 50.00
+      // 2. Create job from description
+      const jobResponse = await api.post<{
+        message: string;
+        job_id: string;
+        request: {
+          request_id: string;
+          payload: any;
+        };
+      }>('/api/v1/jobs/upload', {
+        job_description: jobDescription,
       });
 
-      // 4. Redirect to Stripe Checkout
-      window.location.href = checkoutResponse.checkout_url;
+      const jobId = jobResponse.job_id;
+
+      // 3. Create Stripe payment intent (not checkout session)
+      const paymentResponse = await api.post<{
+        client_secret: string;
+        payment_intent_id: string;
+      }>('/api/v1/payments/create-intent', {
+        resume_id: resumeId,
+        job_id: jobId,
+        user_id: user.id,
+        user_email: user.email,
+        amount: 5000, // R$ 50.00
+        currency: 'brl',
+        success_url: `${window.location.origin}/payment/success?payment_intent_id={PAYMENT_INTENT_ID}&resume_id=${resumeId}&job_id=${jobId}`,
+        cancel_url: `${window.location.origin}/upload?cancelled=true`,
+      });
+
+      const { client_secret, payment_intent_id } = paymentResponse;
+
+      // 4. Process resume improvement with payment intent
+      // This will be done after payment confirmation, so we redirect to payment page
+      // Store the IDs in session storage for use after payment
+      sessionStorage.setItem('pending_resume_id', resumeId);
+      sessionStorage.setItem('pending_job_id', jobId);
+      sessionStorage.setItem('pending_payment_intent_id', payment_intent_id);
+
+      // 5. Redirect to payment page (or use Stripe Elements)
+      router.push(`/payment?payment_intent_id=${payment_intent_id}&client_secret=${client_secret}`);
     } catch (err: any) {
       console.error('Error submitting form:', err);
       setError(err.message || 'Erro ao processar solicitação. Por favor, tente novamente.');

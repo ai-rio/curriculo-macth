@@ -4,13 +4,13 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_db_session
+from app.core.database import SupabaseSession
 from app.schemas.pydantic.job import JobUploadRequest
 from app.services import JobNotFoundError, JobService
 
-job_router = APIRouter()
+job_router = APIRouter(prefix="/jobs", tags=["jobs"])
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 async def upload_job(
     payload: JobUploadRequest,
     request: Request,
-    db: AsyncSession = Depends(get_db_session),
+    db: SupabaseSession = Depends(get_db_session),
 ):
     """
     Accepts a job description as a MarkDown text and stores it in the database.
@@ -78,7 +78,7 @@ async def upload_job(
 async def get_job(
     request: Request,
     job_id: str = Query(..., description="Job ID to fetch data for"),
-    db: AsyncSession = Depends(get_db_session),
+    db: SupabaseSession = Depends(get_db_session),
 ):
     """
     Retrieves job data from both job_model and processed_job model by job_id.
