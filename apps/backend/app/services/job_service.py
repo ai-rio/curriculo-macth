@@ -39,6 +39,7 @@ class JobService:
                 job_id=job_id,
                 resume_id=str(resume_id),
                 content=job_description,
+                content_type="text/markdown",
             )
             self.db.add(job)
 

@@ -53,6 +53,7 @@ class Job(Base):
     job_id = Column(String, unique=True, nullable=False)
     resume_id = Column(String, ForeignKey("resumes.resume_id"), nullable=False)
     content = Column(Text, nullable=False)
+    content_type = Column(String, nullable=False, default="text/markdown")
     created_at = Column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),
