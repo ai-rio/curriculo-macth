@@ -65,6 +65,7 @@ class AIOptimizationService:
         api_key: str | None = None,
         model: str | None = None,
         max_tokens: int | None = None,
+        temperature: float | None = None,
     ):
         """
         Initialize AI optimization service.
@@ -73,10 +74,12 @@ class AIOptimizationService:
             api_key: OpenRouter API key (defaults to settings.OPENROUTER_API_KEY)
             model: Model to use (defaults to settings.OPENROUTER_MODEL)
             max_tokens: Max tokens for response (defaults to settings.OPENROUTER_MAX_TOKENS)
+            temperature: Temperature for response (defaults to settings.OPENROUTER_TEMPERATURE)
         """
         self.api_key = api_key or getattr(settings, "OPENROUTER_API_KEY", None)
-        self.model = model or getattr(settings, "OPENROUTER_MODEL", "anthropic/claude-3.5-sonnet")
+        self.default_model = model or getattr(settings, "OPENROUTER_MODEL", "anthropic/claude-3.5-sonnet")
         self.max_tokens = max_tokens or getattr(settings, "OPENROUTER_MAX_TOKENS", 4000)
+        self.default_temperature = temperature or getattr(settings, "OPENROUTER_TEMPERATURE", 0.7)
 
         if not self.api_key:
             raise AIOptimizationError("OPENROUTER_API_KEY não configurada")
@@ -87,13 +90,15 @@ class AIOptimizationService:
             base_url="https://openrouter.ai/api/v1",
         )
 
-        logger.info(f"Initialized AIOptimizationService with model: {self.model}")
+        logger.info(f"Initialized AIOptimizationService with default model: {self.default_model}")
 
     async def optimize_resume(
         self,
         resume_text: str,
         job_description: str,
         user_id: str | None = None,
+        model: str | None = None,
+        temperature: float | None = None,
     ) -> OptimizationResult:
         """
         Optimize resume for a specific job description using AI.
@@ -102,6 +107,8 @@ class AIOptimizationService:
             resume_text: Original resume text
             job_description: Target job description
             user_id: Optional user ID for tracking
+            model: Override default model (e.g., "openai/gpt-4", "google/gemini-pro")
+            temperature: Override default temperature (0.0-1.0)
 
         Returns:
             OptimizationResult with optimized text and metadata
@@ -110,14 +117,35 @@ class AIOptimizationService:
             AIOptimizationError: If optimization fails
         """
         try:
-            logger.info(f"Starting resume optimization (user: {user_id or 'anonymous'})")
+            # Validate model override if provided
+            selected_model = model or self.default_model
+            if model and not settings.ALLOW_MODEL_OVERRIDE:
+                logger.warning(
+                    f"Model override attempted but not allowed: {model}. Using default: {self.default_model}"
+                )
+                selected_model = self.default_model
+
+            # Validate model
+            from app.core.config import validate_model
+
+            if not validate_model(selected_model):
+                raise AIOptimizationError(
+                    f"Modelo não suportado: {selected_model}. "
+                    f"Configure STRICT_MODEL_VALIDATION=false para usar qualquer modelo."
+                )
+
+            selected_temperature = temperature or self.default_temperature
+            logger.info(
+                f"Starting resume optimization (user: {user_id or 'anonymous'}, "
+                f"model: {selected_model}, temperature: {selected_temperature})"
+            )
 
             # Build optimization prompt
             prompt = self._build_optimization_prompt(resume_text, job_description)
 
             # Call OpenRouter API
             response = await self.client.chat.completions.create(
-                model=self.model,
+                model=selected_model,
                 messages=[
                     {
                         "role": "system",
@@ -125,7 +153,7 @@ class AIOptimizationService:
                     },
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.7,
+                temperature=selected_temperature,
                 max_tokens=self.max_tokens,
                 response_format={"type": "json_object"},
             )
@@ -134,7 +162,8 @@ class AIOptimizationService:
             result = self._parse_ai_response(response)
 
             logger.info(
-                f"Resume optimization completed - Match: {result.match_percentage}%, "
+                f"Resume optimization completed - Model: {selected_model}, "
+                f"Match: {result.match_percentage}%, "
                 f"Suggestions: {len(result.suggestions)}, Keywords: {len(result.keywords)}"
             )
 

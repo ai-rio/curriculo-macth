@@ -17,14 +17,14 @@ class Settings(BaseSettings):
     SYNC_DATABASE_URL: str | None = None
     ASYNC_DATABASE_URL: str | None = None
     SESSION_SECRET_KEY: str | None = None
-    LLM_PROVIDER: str | None = "ollama"
+    LLM_PROVIDER: str | None = "openrouter"
     LLM_API_KEY: str | None = None
-    LLM_BASE_URL: str | None = None
-    LL_MODEL: str | None = "gemma3:4b"
-    EMBEDDING_PROVIDER: str | None = "ollama"
+    LLM_BASE_URL: str | None = "https://openrouter.ai/api/v1"
+    LL_MODEL: str | None = "anthropic/claude-3.5-sonnet"
+    EMBEDDING_PROVIDER: str | None = "openrouter"
     EMBEDDING_API_KEY: str | None = None
-    EMBEDDING_BASE_URL: str | None = None
-    EMBEDDING_MODEL: str | None = "dengcao/Qwen3-Embedding-0.6B:Q8_0"
+    EMBEDDING_BASE_URL: str | None = "https://openrouter.ai/api/v1"
+    EMBEDDING_MODEL: str | None = "text-embedding-3-small"
 
     # Stripe Configuration
     stripe_secret_key: str | None = None
@@ -39,6 +39,13 @@ class Settings(BaseSettings):
     OPENROUTER_API_KEY: str | None = None
     OPENROUTER_MODEL: str = "anthropic/claude-3.5-sonnet"
     OPENROUTER_MAX_TOKENS: int = 4000
+    OPENROUTER_TEMPERATURE: float = 0.7
+
+    # Allow model override per request (security feature)
+    ALLOW_MODEL_OVERRIDE: bool = False
+
+    # Strict model validation (if True, only allowed models can be used)
+    STRICT_MODEL_VALIDATION: bool = False
 
     # File Upload Configuration
     MAX_RESUME_SIZE_MB: int = 2
@@ -52,6 +59,39 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+# Supported OpenRouter Models
+# See: https://openrouter.ai/models for full list
+SUPPORTED_OPENROUTER_MODELS = [
+    "anthropic/claude-3.5-sonnet",
+    "anthropic/claude-3-opus",
+    "anthropic/claude-3-haiku",
+    "openai/gpt-4",
+    "openai/gpt-4-turbo",
+    "openai/gpt-4o",
+    "google/gemini-pro",
+    "google/gemini-flash",
+    "meta-llama/llama-3.1-405b-instruct",
+    "meta-llama/llama-3.1-70b-instruct",
+    "mistralai/mistral-large",
+    "cohere/command-r-plus",
+]
+
+
+def validate_model(model: str) -> bool:
+    """
+    Validate if the model is supported.
+
+    Args:
+        model: Model identifier (e.g., "anthropic/claude-3.5-sonnet")
+
+    Returns:
+        True if model is valid, False otherwise
+    """
+    if not settings.STRICT_MODEL_VALIDATION:
+        return True
+    return model in SUPPORTED_OPENROUTER_MODELS
 
 
 _LEVEL_BY_ENV: dict[Literal["production", "staging", "local"], int] = {

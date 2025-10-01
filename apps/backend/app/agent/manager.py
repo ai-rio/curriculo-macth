@@ -31,11 +31,17 @@ class AgentManager:
 
                 api_key = opts.get("llm_api_key", settings.LLM_API_KEY)
                 return OpenAIProvider(model_name=self.model, api_key=api_key, opts=opts)
-            case "ollama":
-                from .providers.ollama import OllamaProvider
+            case "openrouter":
+                from .providers.openrouter import OpenRouterProvider
 
-                model = opts.get("model", self.model)
-                return OllamaProvider(model_name=model, opts=opts)
+                api_key = opts.get("llm_api_key", settings.OPENROUTER_API_KEY or settings.LLM_API_KEY)
+                api_base_url = opts.get("llm_base_url", settings.LLM_BASE_URL)
+                return OpenRouterProvider(
+                    model_name=self.model,
+                    api_key=api_key,
+                    api_base_url=api_base_url,
+                    opts=opts,
+                )
             case _:
                 from .providers.llama_index import LlamaIndexProvider
 
@@ -71,11 +77,16 @@ class EmbeddingManager:
 
                 api_key = kwargs.get("openai_api_key", settings.EMBEDDING_API_KEY)
                 return OpenAIEmbeddingProvider(api_key=api_key, embedding_model=self._model)
-            case "ollama":
-                from .providers.ollama import OllamaEmbeddingProvider
+            case "openrouter":
+                from .providers.openrouter import OpenRouterEmbeddingProvider
 
-                model = kwargs.get("embedding_model", self._model)
-                return OllamaEmbeddingProvider(embedding_model=model)
+                api_key = kwargs.get("embedding_api_key", settings.OPENROUTER_API_KEY or settings.EMBEDDING_API_KEY)
+                api_base_url = kwargs.get("embedding_base_url", settings.EMBEDDING_BASE_URL)
+                return OpenRouterEmbeddingProvider(
+                    api_key=api_key,
+                    embedding_model=self._model,
+                    api_base_url=api_base_url,
+                )
             case _:
                 from .providers.llama_index import LlamaIndexEmbeddingProvider
 
