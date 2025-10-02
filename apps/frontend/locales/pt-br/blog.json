@@ -1,0 +1,31 @@
+{
+  "blog": {
+    "title": "Blog de Carreiras",
+    "subtitle": "Dicas e estratégias para impulsionar sua carreira",
+    "comingSoon": "Em breve - Conteúdo incrível está a caminho!",
+    "categories": {
+      "all": "Todos",
+      "resumeWriting": "Dicas de Currículo",
+      "atsOptimization": "Otimização para ATS",
+      "interviewPrep": "Preparação para Entrevistas",
+      "careerAdvice": "Conselhos de Carreira",
+      "jobSearch": "Busca de Emprego",
+      "marketTrends": "Tendências do Mercado"
+    },
+    "navigation": {
+      "previous": "Anterior",
+      "next": "Próximo",
+      "backToBlog": "Voltar ao Blog",
+      "readMore": "Leia Mais",
+      "shareArticle": "Compartilhar Artigo"
+    },
+    "meta": {
+      "readingTime": "min de leitura",
+      "publishedOn": "Publicado em",
+      "updatedOn": "Atualizado em",
+      "tags": "Tags",
+      "author": "Autor",
+      "relatedPosts": "Posts Relacionados"
+    }
+  }
+}

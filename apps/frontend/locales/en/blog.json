@@ -1,0 +1,31 @@
+{
+  "blog": {
+    "title": "Career Blog",
+    "subtitle": "Tips and strategies to advance your career",
+    "comingSoon": "Coming soon - Great content is on the way!",
+    "categories": {
+      "all": "All",
+      "resumeWriting": "Resume Writing Tips",
+      "atsOptimization": "ATS Optimization",
+      "interviewPrep": "Interview Preparation",
+      "careerAdvice": "Career Advice",
+      "jobSearch": "Job Search",
+      "marketTrends": "Market Trends"
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "backToBlog": "Back to Blog",
+      "readMore": "Read More",
+      "shareArticle": "Share Article"
+    },
+    "meta": {
+      "readingTime": "min read",
+      "publishedOn": "Published on",
+      "updatedOn": "Updated on",
+      "tags": "Tags",
+      "author": "Author",
+      "relatedPosts": "Related Posts"
+    }
+  }
+}

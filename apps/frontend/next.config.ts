@@ -1,6 +1,6 @@
-import type { NextConfig } from "next";
+import withMDX from '@next/mdx';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   /* config options here */
     async rewrites() {
     return [
@@ -12,4 +12,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withMDX(nextConfig);
