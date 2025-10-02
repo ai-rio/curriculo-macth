@@ -70,13 +70,6 @@
     "corrupted": "File corrupted",
     "upload": "Try uploading again"
   },
-  "auth": {
-    "title": "Authentication error",
-    "subtitle": "An error occurred while authenticating your account.",
-    "login": "Try logging in again",
-    "resetPassword": "Reset password",
-    "contactSupport": "Contact support"
-  },
   "subscription": {
     "title": "Subscription error",
     "subtitle": "An error occurred with your subscription.",

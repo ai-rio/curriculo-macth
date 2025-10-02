@@ -53,19 +53,16 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../../locales/${locale}/errors.json`),
     ]);
 
-    // Deep merge all translation modules into a single messages object
-    let messages = {};
-    for (const moduleData of [
-      common.default,
-      auth.default,
-      dashboard.default,
-      pricing.default,
-      resume.default,
-      navigation.default,
-      errors.default,
-    ]) {
-      messages = deepMerge(messages, moduleData);
-    }
+    // Merge all translation modules into a single messages object
+    const messages = {
+      ...common.default,
+      ...auth.default,
+      ...dashboard.default,
+      ...pricing.default,
+      ...resume.default,
+      ...navigation.default,
+      ...errors.default,
+    };
 
     return {
       locale,

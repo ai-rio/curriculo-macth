@@ -115,6 +115,7 @@
     "button": "Começar Gratuitamente",
     "note": "Não é necessário cartão de crédito • 1 otimização gratuita por mês"
   },
+  "whatsIncluded": "O que está incluído",
   "currentPlan": {
     "title": "Seu Plano Atual",
     "subtitle": "Gerencie sua assinatura Resume-Matcher e uso",
@@ -132,5 +133,30 @@
     "cancel": "Cancelar Plano",
     "canceling": "Cancelando...",
     "cancelConfirm": "Tem certeza que deseja cancelar sua assinatura?"
+  },
+  "plans": {
+    "free": {
+      "name": "Gratuito",
+      "description": "Perfeito para experimentar a otimização de currículo",
+      "price": "Gratuito",
+      "period": "",
+      "button": "Começar Gratuitamente",
+      "features": {
+        "basicAnalysis": "Análise ATS básica",
+        "limitedOptimizations": "1 otimização por mês"
+      }
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "Otimizações ilimitadas e recursos avançados",
+      "price": "$29",
+      "period": "/mês",
+      "button": "Começar com Pro",
+      "features": {
+        "unlimitedOptimizations": "Otimizações ilimitadas",
+        "advancedAnalysis": "Análise avançada com IA",
+        "professionalTemplates": "Modelos de currículo profissionais"
+      }
+    }
   }
 }

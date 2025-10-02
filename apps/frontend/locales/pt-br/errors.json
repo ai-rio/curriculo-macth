@@ -70,13 +70,6 @@
     "corrupted": "Arquivo corrompido",
     "upload": "Tentar upload novamente"
   },
-  "auth": {
-    "title": "Erro de autenticação",
-    "subtitle": "Ocorreu um erro ao autenticar sua conta.",
-    "login": "Tentar fazer login novamente",
-    "resetPassword": "Redefinir senha",
-    "contactSupport": "Entrar em contato com o suporte"
-  },
   "subscription": {
     "title": "Erro de assinatura",
     "subtitle": "Ocorreu um erro com sua assinatura.",
