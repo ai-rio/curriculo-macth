@@ -19,7 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
+      "@/*": ["./src/*", "./*"],
       "@repo/shared-types": ["../../packages/shared-types/src"]
     }
   },

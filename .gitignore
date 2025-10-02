@@ -82,6 +82,7 @@ supabase/.branches/
 # next.js
 /.next/
 /out/
+.swc/
 
 # production
 /build
