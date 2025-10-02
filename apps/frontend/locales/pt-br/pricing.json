@@ -15,52 +15,6 @@
       "successRate": "Taxa de Sucesso",
       "happyUsers": "Usuários Satisfeitos"
     },
-    "plans": {
-      "free": {
-        "name": "Gratuito",
-        "description": "Perfeito para experimentar a otimização de currículo",
-        "price": "Gratuito",
-        "period": "",
-        "button": "Começar Gratuitamente",
-        "features": {
-          "basicAnalysis": "Pontuação básica de compatibilidade ATS",
-          "limitedOptimizations": "1 otimização por mês"
-        }
-      },
-      "proLifetime": {
-        "name": "Pro Vitalício",
-        "description": "Pagamento único para acesso ilimitado",
-        "badge": "Mais Popular",
-        "price": "$29",
-        "interval": "única vez",
-        "cta": "Comprar Acesso Vitalício",
-        "features": [
-          "Otimizações ilimitadas de currículo",
-          "Modelos de IA avançados (Claude-3 Sonnet)",
-          "Modelos de currículo profissionais",
-          "Exportar para formato .docx",
-          "Histórico e análises de currículos",
-          "Suporte prioritário por e-mail",
-          "Sem taxas recorrentes"
-        ]
-      },
-      "proMonthly": {
-        "name": "Pro Mensal",
-        "description": "Assinatura mensal flexível",
-        "price": "$4.99",
-        "interval": "/mês",
-        "cta": "Iniciar Plano Mensal",
-        "features": [
-          "Otimizações ilimitadas de currículo",
-          "Modelos de IA avançados (Claude-3 Sonnet)",
-          "Modelos de currículo profissionais",
-          "Exportar para formato .docx",
-          "Histórico e análises de currículos",
-          "Suporte prioritário por e-mail",
-          "Cancele a qualquer momento"
-        ]
-      }
-    },
     "features": {
       "title": "Por que Resume-Matcher?",
       "subtitle": "Criado por recrutadores, para candidatos de emprego",
@@ -133,16 +87,29 @@
       "canceling": "Cancelando...",
       "cancelConfirm": "Tem certeza que deseja cancelar sua assinatura?"
     },
-    "pro": {
-      "name": "Pro",
-      "description": "Otimizações ilimitadas e recursos avançados",
-      "price": "$29",
-      "period": "/mês",
-      "button": "Começar com Pro",
-      "features": {
-        "unlimitedOptimizations": "Otimizações ilimitadas",
-        "advancedAnalysis": "Análise avançada com IA",
-        "professionalTemplates": "Modelos de currículo profissionais"
+    "plans": {
+      "free": {
+        "name": "Gratuito",
+        "description": "Perfeito para experimentar a otimização de currículo",
+        "price": "Gratuito",
+        "period": "",
+        "button": "Começar Gratuitamente",
+        "features": {
+          "basicAnalysis": "Pontuação básica de compatibilidade ATS",
+          "limitedOptimizations": "1 otimização por mês"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Otimizações ilimitadas e recursos avançados",
+        "price": "$29",
+        "period": "/mês",
+        "button": "Começar com Pro",
+        "features": {
+          "unlimitedOptimizations": "Otimizações ilimitadas",
+          "advancedAnalysis": "Análise avançada com IA",
+          "professionalTemplates": "Modelos de currículo profissionais"
+        }
       }
     }
   }
