@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { CheckCircle, TrendingUp, Users, Zap, Crown } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { CheckCircle, Crown, TrendingUp, Users, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PricingComparison, PricingFAQ } from '@/components/ui/pricing-card';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 // Pricing tiers adapted from our backend service

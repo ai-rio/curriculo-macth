@@ -21,9 +21,10 @@ export interface BlogPost {
 export const mockBlogPosts: Record<string, BlogPost[]> = {
   'pt-br': [
     {
-      slug: 'como-otimizar-seu-curriculo-para-ats',
+      slug: 'how-to-optimize-resume-for-ats', // Same slug for cross-language compatibility
       title: 'Como Otimizar seu Currículo para Sistemas ATS',
-      description: 'Aprenda os segredos para passar pelos sistemas automatizados de triagem e garantir mais entrevistas',
+      description:
+        'Aprenda os segredos para passar pelos sistemas automatizados de triagem e garantir mais entrevistas',
       date: '2024-10-02',
       readingTime: 8,
       category: 'atsOptimization',
@@ -65,10 +66,10 @@ Otimizar seu currículo para ATS não significa sacrificar a legibilidade humana
       author: {
         name: 'Resume-Matcher Team',
       },
-      tags: ['ATS', 'currículo', 'otimização', 'entrevista']
+      tags: ['ATS', 'currículo', 'otimização', 'entrevista'],
     },
     {
-      slug: 'dicas-para-entrevistas-online',
+      slug: 'essential-tips-online-interviews-2024',
       title: 'Dicas Essenciais para Entrevistas Online em 2024',
       description: 'Como se destacar em entrevistas remotas e conquistar sua vaga dos sonhos',
       date: '2024-10-01',
@@ -93,14 +94,15 @@ Com preparação adequada, você pode transformar entrevistas remotas em sua van
       author: {
         name: 'Resume-Matcher Team',
       },
-      tags: ['entrevista', 'remoto', 'zoom', 'preparação']
-    }
+      tags: ['entrevista', 'remoto', 'zoom', 'preparação'],
+    },
   ],
-  'en': [
+  en: [
     {
       slug: 'how-to-optimize-resume-for-ats',
       title: 'How to Optimize Your Resume for ATS Systems',
-      description: 'Learn the secrets to getting past automated screening systems and landing more interviews',
+      description:
+        'Learn the secrets to getting past automated screening systems and landing more interviews',
       date: '2024-10-02',
       readingTime: 8,
       category: 'atsOptimization',
@@ -136,9 +138,9 @@ Optimizing your resume for ATS doesn't mean sacrificing human readability.`,
       author: {
         name: 'Resume-Matcher Team',
       },
-      tags: ['ATS', 'resume', 'optimization', 'interview']
-    }
-  ]
+      tags: ['ATS', 'resume', 'optimization', 'interview'],
+    },
+  ],
 };
 
 export function getAllBlogPosts(locale: string): BlogPost[] {
@@ -147,7 +149,7 @@ export function getAllBlogPosts(locale: string): BlogPost[] {
 
 export function getBlogPostBySlug(slug: string, locale: string): BlogPost | null {
   const posts = mockBlogPosts[locale] || [];
-  return posts.find(post => post.slug === slug) || null;
+  return posts.find((post) => post.slug === slug) || null;
 }
 
 export function getBlogPostsByCategory(category: string, locale: string): BlogPost[] {
@@ -157,5 +159,18 @@ export function getBlogPostsByCategory(category: string, locale: string): BlogPo
     return allPosts;
   }
 
-  return allPosts.filter(post => post.category === category);
+  return allPosts.filter((post) => post.category === category);
+}
+
+export function getRelatedPosts(currentPost: BlogPost, limit = 3): BlogPost[] {
+  const allPosts = getAllBlogPosts(currentPost.locale);
+
+  return allPosts
+    .filter(
+      (post) =>
+        post.slug !== currentPost.slug &&
+        (post.category === currentPost.category ||
+          post.tags?.some((tag) => currentPost.tags?.includes(tag)))
+    )
+    .slice(0, limit);
 }

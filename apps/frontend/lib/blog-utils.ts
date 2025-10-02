@@ -1,6 +1,6 @@
 import fs from 'fs';
-import path from 'path';
 import matter from 'gray-matter';
+import path from 'path';
 
 export interface BlogPost {
   slug: string;
@@ -57,7 +57,7 @@ export function getAllBlogPosts(locale: string): BlogPost[] {
           locale,
           author: matterResult.data.author,
           tags: matterResult.data.tags || [],
-          lastModified: matterResult.data.lastModified
+          lastModified: matterResult.data.lastModified,
         } as BlogPost;
       })
       // Sort posts by date (newest first)
@@ -97,7 +97,7 @@ export function getBlogPostBySlug(slug: string, locale: string): BlogPost | null
       locale,
       author: matterResult.data.author,
       tags: matterResult.data.tags || [],
-      lastModified: matterResult.data.lastModified
+      lastModified: matterResult.data.lastModified,
     } as BlogPost;
   } catch (error) {
     console.error('Error reading blog post:', error);
@@ -112,22 +112,23 @@ export function getBlogPostsByCategory(category: string, locale: string): BlogPo
     return allPosts;
   }
 
-  return allPosts.filter(post => post.category === category);
+  return allPosts.filter((post) => post.category === category);
 }
 
 export function getFeaturedBlogPosts(locale: string, limit = 3): BlogPost[] {
   const allPosts = getAllBlogPosts(locale);
-  return allPosts.filter(post => post.featured).slice(0, limit);
+  return allPosts.filter((post) => post.featured).slice(0, limit);
 }
 
 export function getRelatedPosts(currentPost: BlogPost, limit = 3): BlogPost[] {
   const allPosts = getAllBlogPosts(currentPost.locale);
 
   return allPosts
-    .filter(post =>
-      post.slug !== currentPost.slug &&
-      (post.category === currentPost.category ||
-       post.tags?.some(tag => currentPost.tags?.includes(tag)))
+    .filter(
+      (post) =>
+        post.slug !== currentPost.slug &&
+        (post.category === currentPost.category ||
+          post.tags?.some((tag) => currentPost.tags?.includes(tag)))
     )
     .slice(0, limit);
 }

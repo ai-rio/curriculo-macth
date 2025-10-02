@@ -1,26 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
   CreditCard,
+  CreditCard as CreditCardIcon,
+  Crown,
+  FileText,
   TrendingUp,
   Users,
-  FileText,
-  CheckCircle,
-  AlertCircle,
-  Crown,
   Zap,
-  Calendar,
-  CreditCard as CreditCardIcon,
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
+import { useEffect, useState } from 'react';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 

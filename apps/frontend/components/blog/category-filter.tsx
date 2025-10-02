@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+
 import { Button } from '../ui/button';
 
 interface CategoryFilterProps {
@@ -16,13 +17,13 @@ const CATEGORIES = [
   'interviewPrep',
   'careerAdvice',
   'jobSearch',
-  'marketTrends'
+  'marketTrends',
 ] as const;
 
 export default function CategoryFilter({
   activeCategory,
   onCategoryChange,
-  locale
+  locale,
 }: CategoryFilterProps) {
   const t = useTranslations('blog');
 
@@ -34,9 +35,10 @@ export default function CategoryFilter({
           variant={activeCategory === category ? 'default' : 'outline'}
           size="sm"
           onClick={() => onCategoryChange(category)}
-          className={activeCategory === category
-            ? 'bg-indigo-600 hover:bg-indigo-700'
-            : 'hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-300'
+          className={
+            activeCategory === category
+              ? 'bg-indigo-600 hover:bg-indigo-700'
+              : 'hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-300'
           }
         >
           {t(`categories.${category}`)}

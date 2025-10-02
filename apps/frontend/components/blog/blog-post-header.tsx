@@ -21,7 +21,7 @@ export default function BlogPostHeader({
   date,
   readingTime,
   category,
-  author
+  author,
 }: BlogPostHeaderProps) {
   const t = useTranslations('blog');
 
@@ -32,30 +32,33 @@ export default function BlogPostHeader({
           {t(`categories.${category}`)}
         </span>
         <span>•</span>
-        <span>{readingTime} {t('meta.readingTime')}</span>
+        <span>
+          {readingTime} {t('meta.readingTime')}
+        </span>
       </div>
 
       <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl md:text-5xl mb-4">
         {title}
       </h1>
 
-      <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-        {description}
-      </p>
+      <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">{description}</p>
 
       <div className="flex items-center justify-center gap-4 text-sm text-gray-500 border-t border-b border-gray-200 py-4">
         <time>
-          {t('meta.publishedOn')} {new Date(date).toLocaleDateString(undefined, {
+          {t('meta.publishedOn')}{' '}
+          {new Date(date).toLocaleDateString(undefined, {
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
+            day: 'numeric',
           })}
         </time>
 
         {author && (
           <>
             <span>•</span>
-            <span>{t('meta.author')}: {author.name}</span>
+            <span>
+              {t('author')}: {author.name}
+            </span>
           </>
         )}
       </div>

@@ -1,7 +1,10 @@
 'use client';
 
+import { Check, Crown, Sparkles, Star, Zap } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
-import { Check, Star, Zap, Crown, Sparkles } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
@@ -269,7 +271,7 @@ export function PricingFAQ({ className }: PricingFAQProps) {
     <div className={cn('max-w-3xl mx-auto space-y-6', className)}>
       <div className="text-center">
         <h3 className="text-2xl font-bold mb-2">Frequently Asked Questions</h3>
-        <p className="text-muted-foreground">Got questions? We're here to help.</p>
+        <p className="text-muted-foreground">Got questions? We&apos;re here to help.</p>
       </div>
 
       <div className="space-y-4">
@@ -284,9 +286,9 @@ export function PricingFAQ({ className }: PricingFAQProps) {
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
           Still have questions?{' '}
-          <a href="/contact" className="text-primary hover:underline">
+          <Link href="/contact" className="text-primary hover:underline">
             Contact support
-          </a>
+          </Link>
         </p>
       </div>
     </div>

@@ -59,6 +59,18 @@
           "Priority email support",
           "Cancel anytime"
         ]
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Unlimited optimizations and advanced features",
+        "price": "$29",
+        "period": "/month",
+        "button": "Get Started with Pro",
+        "features": {
+          "unlimitedOptimizations": "Unlimited optimizations",
+          "advancedAnalysis": "Advanced AI-powered analysis",
+          "professionalTemplates": "Professional resume templates"
+        }
       }
     },
     "features": {
@@ -132,31 +144,6 @@
       "cancel": "Cancel Plan",
       "canceling": "Canceling...",
       "cancelConfirm": "Are you sure you want to cancel your subscription?"
-    },
-    "plans": {
-      "free": {
-        "name": "Free",
-        "description": "Perfect for trying out resume optimization",
-        "price": "Free",
-        "period": "",
-        "button": "Get Started Free",
-        "features": {
-          "basicAnalysis": "Basic ATS analysis",
-          "limitedOptimizations": "1 optimization per month"
-        }
-      },
-      "pro": {
-        "name": "Pro",
-        "description": "Unlimited optimizations and advanced features",
-        "price": "$29",
-        "period": "/month",
-        "button": "Get Started with Pro",
-        "features": {
-          "unlimitedOptimizations": "Unlimited optimizations",
-          "advancedAnalysis": "Advanced AI-powered analysis",
-          "professionalTemplates": "Professional resume templates"
-        }
-      }
     }
   }
 }

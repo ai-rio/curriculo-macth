@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { loadStripe } from '@stripe/stripe-js';
+import { AlertCircle, CheckCircle, CreditCard, Loader2, Shield } from 'lucide-react';
+import { useState } from 'react';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle, CreditCard, Shield, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Initialize Stripe with publishable key
@@ -300,7 +301,7 @@ export default function PaymentFlow({ tier, onSuccess, onCancel, onError }: Paym
               <Alert className="border-green-200 bg-green-50 text-green-800">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800">
-                  Payment successful! You'll receive a confirmation email shortly.
+                  Payment successful! You&apos;ll receive a confirmation email shortly.
                 </AlertDescription>
               </Alert>
             )}

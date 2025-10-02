@@ -43,17 +43,18 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   try {
     // Load modular translation files
-    const [common, auth, dashboard, pricing, resume, navigation, errors, hero, blog] = await Promise.all([
-      import(`../../locales/${locale}/common.json`),
-      import(`../../locales/${locale}/auth.json`),
-      import(`../../locales/${locale}/dashboard.json`),
-      import(`../../locales/${locale}/pricing.json`),
-      import(`../../locales/${locale}/resume.json`),
-      import(`../../locales/${locale}/navigation.json`),
-      import(`../../locales/${locale}/errors.json`),
-      import(`../../locales/${locale}/hero.json`),
-      import(`../../locales/${locale}/blog.json`),
-    ]);
+    const [common, auth, dashboard, pricing, resume, navigation, errors, hero, blog] =
+      await Promise.all([
+        import(`../../locales/${locale}/common.json`),
+        import(`../../locales/${locale}/auth.json`),
+        import(`../../locales/${locale}/dashboard.json`),
+        import(`../../locales/${locale}/pricing.json`),
+        import(`../../locales/${locale}/resume.json`),
+        import(`../../locales/${locale}/navigation.json`),
+        import(`../../locales/${locale}/errors.json`),
+        import(`../../locales/${locale}/hero.json`),
+        import(`../../locales/${locale}/blog.json`),
+      ]);
 
     // Merge all translation modules into a single messages object
     const messages = {
