@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { BlogPost } from '@/lib/blog-data';
+import { BlogPost } from '@/lib/blog-utils';
 
 import BlogGrid from './blog-grid';
 import BlogSearch from './blog-search';

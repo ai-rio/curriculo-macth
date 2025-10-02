@@ -3,13 +3,13 @@
 import { ArrowRight, BookOpen, Calendar, Clock, Tag } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
 
-import { BlogPost, getRelatedPosts } from '@/lib/blog-data';
+import { BlogPost } from '@/lib/blog-utils';
 
 interface RelatedPostsProps {
   currentPost: BlogPost;
   locale: string;
+  relatedPosts: BlogPost[];
   maxPosts?: number;
 }
 
@@ -110,74 +110,50 @@ function RelatedPostCard({ post, locale, relationType }: RelatedPostCardProps) {
   );
 }
 
-export default function RelatedPosts({ currentPost, locale, maxPosts = 3 }: RelatedPostsProps) {
+export default function RelatedPosts({
+  currentPost,
+  locale,
+  relatedPosts,
+  maxPosts = 3,
+}: RelatedPostsProps) {
   const t = useTranslations('blog');
-  const [relatedPosts, setRelatedPosts] = useState<{
-    category: BlogPost[];
-    tags: BlogPost[];
-    similar: BlogPost[];
-  }>({
-    category: [],
-    tags: [],
-    similar: [],
+
+  // Categorize related posts
+  const categoryPosts = relatedPosts.filter((post) => post.category === currentPost.category);
+  const tagPosts = relatedPosts.filter(
+    (post) =>
+      post.tags && currentPost.tags && post.tags.some((tag) => currentPost.tags!.includes(tag))
+  );
+  const similarPosts = relatedPosts.filter(
+    (post) =>
+      post.category !== currentPost.category &&
+      (!post.tags || !currentPost.tags || !post.tags.some((tag) => currentPost.tags!.includes(tag)))
+  );
+
+  // Build display list with priority order
+  const displayList: Array<{
+    post: BlogPost;
+    relationType: 'category' | 'tag' | 'similar';
+  }> = [];
+
+  // Add category posts (highest priority)
+  categoryPosts.slice(0, Math.ceil(maxPosts * 0.5)).forEach((post) => {
+    displayList.push({ post, relationType: 'category' });
   });
 
-  const [displayPosts, setDisplayPosts] = useState<
-    Array<{
-      post: BlogPost;
-      relationType: 'category' | 'tag' | 'similar';
-    }>
-  >([]);
+  // Add tag posts (medium priority)
+  const remainingSlots = maxPosts - displayList.length;
+  tagPosts.slice(0, Math.ceil(remainingSlots * 0.6)).forEach((post) => {
+    displayList.push({ post, relationType: 'tag' });
+  });
 
-  useEffect(() => {
-    // Get related posts using the utility function
-    const allRelated = getRelatedPosts(currentPost, 12); // Get more to filter
+  // Fill with similar posts (lowest priority)
+  const finalSlots = maxPosts - displayList.length;
+  similarPosts.slice(0, finalSlots).forEach((post) => {
+    displayList.push({ post, relationType: 'similar' });
+  });
 
-    // Categorize related posts
-    const categoryPosts = allRelated.filter((post) => post.category === currentPost.category);
-    const tagPosts = allRelated.filter(
-      (post) =>
-        post.tags && currentPost.tags && post.tags.some((tag) => currentPost.tags!.includes(tag))
-    );
-    const similarPosts = allRelated.filter(
-      (post) =>
-        post.category !== currentPost.category &&
-        (!post.tags ||
-          !currentPost.tags ||
-          !post.tags.some((tag) => currentPost.tags!.includes(tag)))
-    );
-
-    setRelatedPosts({
-      category: categoryPosts,
-      tags: tagPosts,
-      similar: similarPosts,
-    });
-
-    // Build display list with priority order
-    const displayList: Array<{
-      post: BlogPost;
-      relationType: 'category' | 'tag' | 'similar';
-    }> = [];
-
-    // Add category posts (highest priority)
-    categoryPosts.slice(0, Math.ceil(maxPosts * 0.5)).forEach((post) => {
-      displayList.push({ post, relationType: 'category' });
-    });
-
-    // Add tag posts (medium priority)
-    const remainingSlots = maxPosts - displayList.length;
-    tagPosts.slice(0, Math.ceil(remainingSlots * 0.6)).forEach((post) => {
-      displayList.push({ post, relationType: 'tag' });
-    });
-
-    // Fill with similar posts (lowest priority)
-    const finalSlots = maxPosts - displayList.length;
-    similarPosts.slice(0, finalSlots).forEach((post) => {
-      displayList.push({ post, relationType: 'similar' });
-    });
-
-    setDisplayPosts(displayList.slice(0, maxPosts));
-  }, [currentPost, maxPosts]);
+  const displayPosts = displayList.slice(0, maxPosts);
 
   if (displayPosts.length === 0) {
     return (
@@ -237,7 +213,7 @@ export default function RelatedPosts({ currentPost, locale, maxPosts = 3 }: Rela
       </div>
 
       {/* Related Topics */}
-      {(relatedPosts.category.length > 0 || relatedPosts.tags.length > 0) && (
+      {(categoryPosts.length > 0 || tagPosts.length > 0) && (
         <div className="mt-12 pt-8 border-t border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             {t('exploreTopics') || 'Explore Tópicos Relacionados'}

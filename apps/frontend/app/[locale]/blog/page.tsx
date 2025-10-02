@@ -1,7 +1,7 @@
 import BlogClient from '@/components/blog/blog-client';
 import StructuredDataComponent from '@/components/blog/structured-data';
-import { getAllBlogPosts } from '@/lib/blog-data';
 import BlogSEOGenerator from '@/lib/blog-seo';
+import { getAllBlogPosts } from '@/lib/blog-utils';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

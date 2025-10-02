@@ -7,8 +7,8 @@ import RelatedPosts from '@/components/blog/related-posts';
 import SocialSharing from '@/components/blog/social-sharing';
 import { FloatingShareButtons } from '@/components/blog/social-sharing';
 import StructuredDataComponent, { MultipleStructuredData } from '@/components/blog/structured-data';
-import { BlogPost, getBlogPostBySlug, getRelatedPosts } from '@/lib/blog-data';
 import BlogSEOGenerator from '@/lib/blog-seo';
+import { BlogPost, getBlogPostBySlug, getRelatedPosts } from '@/lib/blog-utils';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -163,7 +163,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
             <div className="mt-12 pt-8 border-t border-gray-200">
-              <RelatedPosts currentPost={post} locale={locale} maxPosts={3} />
+              <RelatedPosts
+                currentPost={post}
+                locale={locale}
+                relatedPosts={relatedPosts}
+                maxPosts={3}
+              />
             </div>
           )}
 

@@ -4,7 +4,7 @@ import { Calendar, Clock, Filter, Search, User, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
-import { BlogPost } from '@/lib/blog-data';
+import { BlogPost } from '@/lib/blog-utils';
 
 interface BlogSearchProps {
   posts: BlogPost[];

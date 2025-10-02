@@ -31,12 +31,11 @@ export default function BlogContent({ content, className = '' }: BlogContentProp
   }
 
   return (
-    <div className={`prose prose-lg max-w-none ${className}`}>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: processMarkdownContentSync(content),
-        }}
-      />
-    </div>
+    <div
+      className={`prose prose-lg max-w-none ${className}`}
+      dangerouslySetInnerHTML={{
+        __html: processMarkdownContentSync(content),
+      }}
+    />
   );
 }

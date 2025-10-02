@@ -34,7 +34,7 @@ import {
 } from 'recharts';
 
 import BlogContentManager from '@/lib/blog-content-manager';
-import { BlogPost } from '@/lib/blog-data';
+import { BlogPost } from '@/lib/blog-utils';
 
 interface AnalyticsData {
   totalPosts: number;

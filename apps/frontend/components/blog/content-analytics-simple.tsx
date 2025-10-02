@@ -17,7 +17,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { BlogPost } from '@/lib/blog-data';
+import { BlogPost } from '@/lib/blog-utils';
 
 interface AnalyticsData {
   totalPosts: number;

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
 import ContentAnalytics from '@/components/blog/content-analytics-simple';
-import { getAllBlogPosts } from '@/lib/blog-data';
+import { getAllBlogPosts } from '@/lib/blog-utils';
 
 interface AnalyticsPageProps {
   params: Promise<{
