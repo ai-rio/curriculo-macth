@@ -1,4 +1,9 @@
 {
+  "hero": {
+    "title": "Resume Matcher",
+    "subtitle": "Increase your interview chances with a perfectly tailored resume.",
+    "getStarted": "Get Started"
+  },
   "navigation": {
     "home": "Home",
     "dashboard": "Dashboard",

@@ -1,23 +1,32 @@
+'use client';
+
 import Link from 'next/link';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 import BackgroundContainer from '@/components/common/background-container';
 import GitHubStarBadge from '@/components/common/github-star-badge';
+import LanguageSwitcher from '@/components/common/language-switcher';
 
 export default function Hero() {
+  const t = useTranslations('hero');
+
   return (
     <BackgroundContainer>
       <div className="relative mb-4 h-[30vh] w-full ">
+        <div className="absolute top-4 right-4 z-10">
+          <LanguageSwitcher />
+        </div>
         <div className="flex items-center justify-center mb-20">
           <GitHubStarBadge />
         </div>
 
         <h1 className="text-center text-8xl font-semibold bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.sky.500),theme(colors.pink.400),theme(colors.violet.600),theme(colors.blue.300),theme(colors.purple.400),theme(colors.pink.300),theme(colors.sky.500))] bg-[length:200%_auto] animate-[gradient_8s_linear_infinite]">
-          Resume Matcher
+          {t('title')}
         </h1>
       </div>
       <p className="mb-12 --font-space-grotesk text-center text-lg bg-gradient-to-br from-pink-400 via-blue-400 to-violet-600 bg-clip-text text-transparent md:text-xl">
-        Increase your interview chances with a perfectly tailored resume.
+        {t('subtitle')}
       </p>
       <Link
         href="/resume"
@@ -25,7 +34,7 @@ export default function Hero() {
       >
         <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#3A59D1_0%,#7AC6D2_50%,#3A59D1_100%)]" />
         <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-gray-100 backdrop-blur-3xl">
-          Get Started
+          {t('getStarted')}
           <svg
             width="16"
             height="16"

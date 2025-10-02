@@ -1,4 +1,9 @@
 {
+  "hero": {
+    "title": "Otimizador de Currículos",
+    "subtitle": "Aumente suas chances de entrevista com um currículo perfeitamente adaptado.",
+    "getStarted": "Começar"
+  },
   "navigation": {
     "home": "Início",
     "dashboard": "Painel",

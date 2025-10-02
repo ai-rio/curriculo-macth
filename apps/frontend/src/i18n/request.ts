@@ -44,13 +44,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
   try {
     // Load modular translation files
     const [common, auth, dashboard, pricing, resume, navigation, errors] = await Promise.all([
-      import(`../locales/${locale}/common.json`),
-      import(`../locales/${locale}/auth.json`),
-      import(`../locales/${locale}/dashboard.json`),
-      import(`../locales/${locale}/pricing.json`),
-      import(`../locales/${locale}/resume.json`),
-      import(`../locales/${locale}/navigation.json`),
-      import(`../locales/${locale}/errors.json`),
+      import(`../../locales/${locale}/common.json`),
+      import(`../../locales/${locale}/auth.json`),
+      import(`../../locales/${locale}/dashboard.json`),
+      import(`../../locales/${locale}/pricing.json`),
+      import(`../../locales/${locale}/resume.json`),
+      import(`../../locales/${locale}/navigation.json`),
+      import(`../../locales/${locale}/errors.json`),
     ]);
 
     // Deep merge all translation modules into a single messages object
@@ -80,13 +80,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
       console.log('🚀 REQUEST CONFIG - Attempting fallback to:', fallbackLocale);
 
       const [common, auth, dashboard, pricing, resume, navigation, errors] = await Promise.all([
-        import(`../locales/${fallbackLocale}/common.json`),
-        import(`../locales/${fallbackLocale}/auth.json`),
-        import(`../locales/${fallbackLocale}/dashboard.json`),
-        import(`../locales/${fallbackLocale}/pricing.json`),
-        import(`../locales/${fallbackLocale}/resume.json`),
-        import(`../locales/${fallbackLocale}/navigation.json`),
-        import(`../locales/${fallbackLocale}/errors.json`),
+        import(`../../locales/${fallbackLocale}/common.json`),
+        import(`../../locales/${fallbackLocale}/auth.json`),
+        import(`../../locales/${fallbackLocale}/dashboard.json`),
+        import(`../../locales/${fallbackLocale}/pricing.json`),
+        import(`../../locales/${fallbackLocale}/resume.json`),
+        import(`../../locales/${fallbackLocale}/navigation.json`),
+        import(`../../locales/${fallbackLocale}/errors.json`),
       ]);
 
       const fallbackMessages = {
