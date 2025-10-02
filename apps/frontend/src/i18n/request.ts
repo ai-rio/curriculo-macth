@@ -43,7 +43,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   try {
     // Load modular translation files
-    const [common, auth, dashboard, pricing, resume, navigation, errors] = await Promise.all([
+    const [common, auth, dashboard, pricing, resume, navigation, errors, hero] = await Promise.all([
       import(`../../locales/${locale}/common.json`),
       import(`../../locales/${locale}/auth.json`),
       import(`../../locales/${locale}/dashboard.json`),
@@ -51,6 +51,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../../locales/${locale}/resume.json`),
       import(`../../locales/${locale}/navigation.json`),
       import(`../../locales/${locale}/errors.json`),
+      import(`../../locales/${locale}/hero.json`),
     ]);
 
     // Merge all translation modules into a single messages object
@@ -62,6 +63,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ...resume.default,
       ...navigation.default,
       ...errors.default,
+      ...hero.default,
     };
 
     return {
@@ -76,15 +78,17 @@ export default getRequestConfig(async ({ requestLocale }) => {
       const fallbackLocale = routing.defaultLocale;
       console.log('🚀 REQUEST CONFIG - Attempting fallback to:', fallbackLocale);
 
-      const [common, auth, dashboard, pricing, resume, navigation, errors] = await Promise.all([
-        import(`../../locales/${fallbackLocale}/common.json`),
-        import(`../../locales/${fallbackLocale}/auth.json`),
-        import(`../../locales/${fallbackLocale}/dashboard.json`),
-        import(`../../locales/${fallbackLocale}/pricing.json`),
-        import(`../../locales/${fallbackLocale}/resume.json`),
-        import(`../../locales/${fallbackLocale}/navigation.json`),
-        import(`../../locales/${fallbackLocale}/errors.json`),
-      ]);
+      const [common, auth, dashboard, pricing, resume, navigation, errors, hero] =
+        await Promise.all([
+          import(`../../locales/${fallbackLocale}/common.json`),
+          import(`../../locales/${fallbackLocale}/auth.json`),
+          import(`../../locales/${fallbackLocale}/dashboard.json`),
+          import(`../../locales/${fallbackLocale}/pricing.json`),
+          import(`../../locales/${fallbackLocale}/resume.json`),
+          import(`../../locales/${fallbackLocale}/navigation.json`),
+          import(`../../locales/${fallbackLocale}/errors.json`),
+          import(`../../locales/${fallbackLocale}/hero.json`),
+        ]);
 
       const fallbackMessages = {
         ...common.default,
@@ -94,6 +98,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
         ...resume.default,
         ...navigation.default,
         ...errors.default,
+        ...hero.default,
       };
 
       console.log('🚀 REQUEST CONFIG - Using fallback messages for:', fallbackLocale);

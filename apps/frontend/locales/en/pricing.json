@@ -1,161 +1,161 @@
 {
-  "title": "Choose your plan",
-  "subtitle": "Start free, upgrade when you need more power",
-  "badge": "🚀 Special Launch Offer",
-  "hero": {
-    "title": "Optimize Your Resume,",
-    "highlight": "Land Your Dream Job",
-    "subtitle": "Stop getting rejected by ATS systems. Our AI-powered tool helps you create the perfect resume that passes automated screening and gets you interviews.",
-    "getStarted": "Get Started Free",
-    "buyLifetime": "Buy Lifetime Access ($29)"
-  },
-  "socialProof": {
-    "resumesOptimized": "Resumes Optimized",
-    "successRate": "Success Rate",
-    "happyUsers": "Happy Users"
-  },
-  "plans": {
-    "free": {
-      "name": "Free",
-      "description": "Perfect for trying out resume optimization",
-      "price": "Free",
-      "cta": "Get Started Free",
-      "features": [
-        "1 optimization per month",
-        "Basic ATS compatibility score",
-        "Local AI processing",
-        "Email support",
-        "Download results in .txt format"
-      ]
+  "pricing": {
+    "title": "Choose your plan",
+    "subtitle": "Start free, upgrade when you need more power",
+    "badge": "🚀 Special Launch Offer",
+    "hero": {
+      "title": "Optimize Your Resume,",
+      "highlight": "Land Your Dream Job",
+      "subtitle": "Stop getting rejected by ATS systems. Our AI-powered tool helps you create the perfect resume that passes automated screening and gets you interviews.",
+      "getStarted": "Get Started Free",
+      "buyLifetime": "Buy Lifetime Access ($29)"
     },
-    "proLifetime": {
-      "name": "Pro Lifetime",
-      "description": "One-time payment for unlimited access",
-      "badge": "Most Popular",
-      "price": "$29",
-      "interval": "one-time",
-      "cta": "Buy Lifetime Access",
-      "features": [
-        "Unlimited resume optimizations",
-        "Advanced AI models (Claude-3 Sonnet)",
-        "Professional resume templates",
-        "Export to .docx format",
-        "Resume history and analytics",
-        "Priority email support",
-        "No recurring fees"
-      ]
+    "socialProof": {
+      "resumesOptimized": "Resumes Optimized",
+      "successRate": "Success Rate",
+      "happyUsers": "Happy Users"
     },
-    "proMonthly": {
-      "name": "Pro Monthly",
-      "description": "Flexible monthly subscription",
-      "price": "$4.99",
-      "interval": "/month",
-      "cta": "Start Monthly Plan",
-      "features": [
-        "Unlimited resume optimizations",
-        "Advanced AI models (Claude-3 Sonnet)",
-        "Professional resume templates",
-        "Export to .docx format",
-        "Resume history and analytics",
-        "Priority email support",
-        "Cancel anytime"
-      ]
-    }
-  },
-  "features": {
-    "title": "Why Resume-Matcher?",
-    "subtitle": "Built by recruiters, for job seekers",
-    "aiPowered": {
-      "title": "AI-Powered",
-      "description": "Advanced AI models analyze your resume against job descriptions and provide specific, actionable improvements."
-    },
-    "atsOptimized": {
-      "title": "ATS Optimized",
-      "description": "Beat applicant tracking systems with optimized formatting and keyword placement that gets you past automated screening."
-    },
-    "realResults": {
-      "title": "Real Results",
-      "description": "87% success rate with users landing interviews within 2 weeks of using our optimized resumes."
-    }
-  },
-  "faq": {
-    "title": "Frequently Asked Questions",
-    "subtitle": "Everything you need to know about our plans",
-    "questions": [
-      {
-        "question": "What's the difference between Free and Pro plans?",
-        "answer": "Free includes 1 optimization per month with basic features. Pro offers unlimited optimizations, advanced AI models, professional templates, and priority support."
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Perfect for trying out resume optimization",
+        "price": "Free",
+        "period": "",
+        "button": "Get Started Free",
+        "features": {
+          "basicAnalysis": "Basic ATS compatibility score",
+          "limitedOptimizations": "1 optimization per month"
+        }
       },
-      {
-        "question": "Can I cancel my subscription anytime?",
-        "answer": "Yes! You can cancel your monthly subscription anytime. The Pro Lifetime plan is a one-time payment and cannot be canceled."
+      "proLifetime": {
+        "name": "Pro Lifetime",
+        "description": "One-time payment for unlimited access",
+        "badge": "Most Popular",
+        "price": "$29",
+        "interval": "one-time",
+        "cta": "Buy Lifetime Access",
+        "features": [
+          "Unlimited resume optimizations",
+          "Advanced AI models (Claude-3 Sonnet)",
+          "Professional resume templates",
+          "Export to .docx format",
+          "Resume history and analytics",
+          "Priority email support",
+          "No recurring fees"
+        ]
       },
-      {
-        "question": "What file formats are supported?",
-        "answer": "We support PDF, DOCX, and text files. You can download your optimized resumes in .txt format (Free plan) or .docx format (Pro plan)."
-      },
-      {
-        "question": "How does AI optimization work?",
-        "answer": "Our AI analyzes your resume and job description, identifying important keywords and areas for improvement to increase your ATS compatibility."
-      },
-      {
-        "question": "Is there a money-back guarantee?",
-        "answer": "Yes! We offer a 30-day money-back guarantee. If you're not satisfied, contact us for a full refund."
+      "proMonthly": {
+        "name": "Pro Monthly",
+        "description": "Flexible monthly subscription",
+        "price": "$4.99",
+        "interval": "/month",
+        "cta": "Start Monthly Plan",
+        "features": [
+          "Unlimited resume optimizations",
+          "Advanced AI models (Claude-3 Sonnet)",
+          "Professional resume templates",
+          "Export to .docx format",
+          "Resume history and analytics",
+          "Priority email support",
+          "Cancel anytime"
+        ]
       }
-    ]
-  },
-  "trust": {
-    "moneyBack": "30-day money-back guarantee",
-    "cancelAnytime": "Cancel anytime",
-    "securePayment": "Secure payment via Stripe"
-  },
-  "cta": {
-    "title": "Ready to Land Your Dream Job?",
-    "subtitle": "Join thousands of job seekers who have optimized their resumes with Resume-Matcher",
-    "button": "Get Started Free",
-    "note": "No credit card required • 1 free optimization per month"
-  },
-  "whatsIncluded": "What's included",
-  "currentPlan": {
-    "title": "Your Subscription",
-    "subtitle": "Manage your Resume-Matcher subscription and usage",
-    "status": {
-      "active": "Active",
-      "trial": "Trial",
-      "pastDue": "Past Due",
-      "canceled": "Canceled"
     },
-    "upgrade": {
-      "lifetime": "Upgrade to Pro Lifetime",
-      "monthly": "Start Monthly Plan"
+    "features": {
+      "title": "Why Resume-Matcher?",
+      "subtitle": "Built by recruiters, for job seekers",
+      "aiPowered": {
+        "title": "AI-Powered",
+        "description": "Advanced AI models analyze your resume against job descriptions and provide specific, actionable improvements."
+      },
+      "atsOptimized": {
+        "title": "ATS Optimized",
+        "description": "Beat applicant tracking systems with optimized formatting and keyword placement that gets you past automated screening."
+      },
+      "realResults": {
+        "title": "Real Results",
+        "description": "87% success rate with users landing interviews within 2 weeks of using our optimized resumes."
+      }
     },
-    "billing": "Billing History",
-    "cancel": "Cancel Plan",
-    "canceling": "Canceling...",
-    "cancelConfirm": "Are you sure you want to cancel your subscription?"
-  },
-  "plans": {
-    "free": {
-      "name": "Free",
-      "description": "Perfect for trying out resume optimization",
-      "price": "Free",
-      "period": "",
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know about our plans",
+      "questions": [
+        {
+          "question": "What's the difference between Free and Pro plans?",
+          "answer": "Free includes 1 optimization per month with basic features. Pro offers unlimited optimizations, advanced AI models, professional templates, and priority support."
+        },
+        {
+          "question": "Can I cancel my subscription anytime?",
+          "answer": "Yes! You can cancel your monthly subscription anytime. The Pro Lifetime plan is a one-time payment and cannot be canceled."
+        },
+        {
+          "question": "What file formats are supported?",
+          "answer": "We support PDF, DOCX, and text files. You can download your optimized resumes in .txt format (Free plan) or .docx format (Pro plan)."
+        },
+        {
+          "question": "How does AI optimization work?",
+          "answer": "Our AI analyzes your resume and job description, identifying important keywords and areas for improvement to increase your ATS compatibility."
+        },
+        {
+          "question": "Is there a money-back guarantee?",
+          "answer": "Yes! We offer a 30-day money-back guarantee. If you're not satisfied, contact us for a full refund."
+        }
+      ]
+    },
+    "trust": {
+      "moneyBack": "30-day money-back guarantee",
+      "cancelAnytime": "Cancel anytime",
+      "securePayment": "Secure payment via Stripe"
+    },
+    "cta": {
+      "title": "Ready to Land Your Dream Job?",
+      "subtitle": "Join thousands of job seekers who have optimized their resumes with Resume-Matcher",
       "button": "Get Started Free",
-      "features": {
-        "basicAnalysis": "Basic ATS analysis",
-        "limitedOptimizations": "1 optimization per month"
-      }
+      "note": "No credit card required • 1 free optimization per month"
     },
-    "pro": {
-      "name": "Pro",
-      "description": "Unlimited optimizations and advanced features",
-      "price": "$29",
-      "period": "/month",
-      "button": "Get Started with Pro",
-      "features": {
-        "unlimitedOptimizations": "Unlimited optimizations",
-        "advancedAnalysis": "Advanced AI-powered analysis",
-        "professionalTemplates": "Professional resume templates"
+    "whatsIncluded": "What's included",
+    "currentPlan": {
+      "title": "Your Subscription",
+      "subtitle": "Manage your Resume-Matcher subscription and usage",
+      "status": {
+        "active": "Active",
+        "trial": "Trial",
+        "pastDue": "Past Due",
+        "canceled": "Canceled"
+      },
+      "upgrade": {
+        "lifetime": "Upgrade to Pro Lifetime",
+        "monthly": "Start Monthly Plan"
+      },
+      "billing": "Billing History",
+      "cancel": "Cancel Plan",
+      "canceling": "Canceling...",
+      "cancelConfirm": "Are you sure you want to cancel your subscription?"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Perfect for trying out resume optimization",
+        "price": "Free",
+        "period": "",
+        "button": "Get Started Free",
+        "features": {
+          "basicAnalysis": "Basic ATS analysis",
+          "limitedOptimizations": "1 optimization per month"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Unlimited optimizations and advanced features",
+        "price": "$29",
+        "period": "/month",
+        "button": "Get Started with Pro",
+        "features": {
+          "unlimitedOptimizations": "Unlimited optimizations",
+          "advancedAnalysis": "Advanced AI-powered analysis",
+          "professionalTemplates": "Professional resume templates"
+        }
       }
     }
   }

@@ -1,150 +1,137 @@
 {
-  "title": "Escolha seu plano",
-  "subtitle": "Comece gratuitamente, atualize quando precisar de mais recursos",
-  "badge": "🚀 Oferta Especial de Lançamento",
-  "hero": {
-    "title": "Otimize seu Currículo,",
-    "highlight": "Conquiste seu Emprego dos Sonhos",
-    "subtitle": "Pare de ser rejeitado por sistemas ATS. Nossa ferramenta com IA ajuda você a criar o currículo perfeito que passa pela triagem automatizada e garante entrevistas.",
-    "getStarted": "Começar Gratuitamente",
-    "buyLifetime": "Comprar Acesso Vitalício ($29)"
-  },
-  "socialProof": {
-    "resumesOptimized": "Currículos Otimizados",
-    "successRate": "Taxa de Sucesso",
-    "happyUsers": "Usuários Satisfeitos"
-  },
-  "plans": {
-    "free": {
-      "name": "Gratuito",
-      "description": "Perfeito para experimentar a otimização de currículo",
-      "price": "Gratuito",
-      "cta": "Começar Gratuitamente",
-      "features": [
-        "1 otimização por mês",
-        "Pontuação básica de compatibilidade ATS",
-        "Processamento com IA local",
-        "Suporte por e-mail",
-        "Baixar resultados em formato .txt"
-      ]
+  "pricing": {
+    "title": "Escolha seu plano",
+    "subtitle": "Comece gratuitamente, atualize quando precisar de mais recursos",
+    "badge": "🚀 Oferta Especial de Lançamento",
+    "hero": {
+      "title": "Otimize seu Currículo,",
+      "highlight": "Conquiste seu Emprego dos Sonhos",
+      "subtitle": "Pare de ser rejeitado por sistemas ATS. Nossa ferramenta com IA ajuda você a criar o currículo perfeito que passa pela triagem automatizada e garante entrevistas.",
+      "getStarted": "Começar Gratuitamente",
+      "buyLifetime": "Comprar Acesso Vitalício ($29)"
     },
-    "proLifetime": {
-      "name": "Pro Vitalício",
-      "description": "Pagamento único para acesso ilimitado",
-      "badge": "Mais Popular",
-      "price": "$29",
-      "interval": "única vez",
-      "cta": "Comprar Acesso Vitalício",
-      "features": [
-        "Otimizações ilimitadas de currículo",
-        "Modelos de IA avançados (Claude-3 Sonnet)",
-        "Modelos de currículo profissionais",
-        "Exportar para formato .docx",
-        "Histórico e análises de currículos",
-        "Suporte prioritário por e-mail",
-        "Sem taxas recorrentes"
-      ]
+    "socialProof": {
+      "resumesOptimized": "Currículos Otimizados",
+      "successRate": "Taxa de Sucesso",
+      "happyUsers": "Usuários Satisfeitos"
     },
-    "proMonthly": {
-      "name": "Pro Mensal",
-      "description": "Assinatura mensal flexível",
-      "price": "$4.99",
-      "interval": "/mês",
-      "cta": "Iniciar Plano Mensal",
-      "features": [
-        "Otimizações ilimitadas de currículo",
-        "Modelos de IA avançados (Claude-3 Sonnet)",
-        "Modelos de currículo profissionais",
-        "Exportar para formato .docx",
-        "Histórico e análises de currículos",
-        "Suporte prioritário por e-mail",
-        "Cancele a qualquer momento"
-      ]
-    }
-  },
-  "features": {
-    "title": "Por que Resume-Matcher?",
-    "subtitle": "Criado por recrutadores, para candidatos de emprego",
-    "aiPowered": {
-      "title": "Com IA Avançada",
-      "description": "Modelos de IA avançados analisam seu currículo em relação às descrições de vagas e fornecem melhorias específicas e acionáveis."
-    },
-    "atsOptimized": {
-      "title": "Otimizado para ATS",
-      "description": "Vença os sistemas de rastreamento de candidatos com formatação otimizada e posicionamento de palavras-chave que ultrapassa a triagem automatizada."
-    },
-    "realResults": {
-      "title": "Resultados Reais",
-      "description": "Taxa de sucesso de 87% com usuários conseguindo entrevistas em 2 semanas após usar nossos currículos otimizados."
-    }
-  },
-  "faq": {
-    "title": "Perguntas Frequentes",
-    "subtitle": "Tudo o que você precisa saber sobre nossos planos",
-    "questions": [
-      {
-        "question": "Qual é a diferença entre os planos Gratuito e Pro?",
-        "answer": "O plano Gratuito inclui 1 otimização por mês com recursos básicos. O plano Pro oferece otimizações ilimitadas, modelos de IA avançados, modelos profissionais e suporte prioritário."
+    "plans": {
+      "free": {
+        "name": "Gratuito",
+        "description": "Perfeito para experimentar a otimização de currículo",
+        "price": "Gratuito",
+        "period": "",
+        "button": "Começar Gratuitamente",
+        "features": {
+          "basicAnalysis": "Pontuação básica de compatibilidade ATS",
+          "limitedOptimizations": "1 otimização por mês"
+        }
       },
-      {
-        "question": "Posso cancelar minha assinatura a qualquer momento?",
-        "answer": "Sim! Você pode cancelar sua assinatura mensal a qualquer momento. O plano Pro Vitalício é um pagamento único e não pode ser cancelado."
+      "proLifetime": {
+        "name": "Pro Vitalício",
+        "description": "Pagamento único para acesso ilimitado",
+        "badge": "Mais Popular",
+        "price": "$29",
+        "interval": "única vez",
+        "cta": "Comprar Acesso Vitalício",
+        "features": [
+          "Otimizações ilimitadas de currículo",
+          "Modelos de IA avançados (Claude-3 Sonnet)",
+          "Modelos de currículo profissionais",
+          "Exportar para formato .docx",
+          "Histórico e análises de currículos",
+          "Suporte prioritário por e-mail",
+          "Sem taxas recorrentes"
+        ]
       },
-      {
-        "question": "Quais formatos de arquivo são suportados?",
-        "answer": "Suportamos PDF, DOCX e arquivos de texto. Você pode baixar seus currículos otimizados em formato .txt (plano Gratuito) ou .docx (plano Pro)."
-      },
-      {
-        "question": "Como funciona a otimização com IA?",
-        "answer": "Nossa IA analisa seu currículo e a descrição da vaga, identificando palavras-chave importantes e áreas de melhoria para aumentar sua compatibilidade com sistemas ATS."
-      },
-      {
-        "question": "Existe uma garantia de devolução de dinheiro?",
-        "answer": "Sim! Oferecemos garantia de devolução de dinheiro em 30 dias. Se você não estiver satisfeito, entre em contato conosco para um reembolso completo."
+      "proMonthly": {
+        "name": "Pro Mensal",
+        "description": "Assinatura mensal flexível",
+        "price": "$4.99",
+        "interval": "/mês",
+        "cta": "Iniciar Plano Mensal",
+        "features": [
+          "Otimizações ilimitadas de currículo",
+          "Modelos de IA avançados (Claude-3 Sonnet)",
+          "Modelos de currículo profissionais",
+          "Exportar para formato .docx",
+          "Histórico e análises de currículos",
+          "Suporte prioritário por e-mail",
+          "Cancele a qualquer momento"
+        ]
       }
-    ]
-  },
-  "trust": {
-    "moneyBack": "Garantia de devolução de dinheiro em 30 dias",
-    "cancelAnytime": "Cancele a qualquer momento",
-    "securePayment": "Pagamento seguro via Stripe"
-  },
-  "cta": {
-    "title": "Pronto para Conquistar seu Emprego dos Sonhos?",
-    "subtitle": "Junte-se a milhares de candidatos que otimizaram seus currículos com Resume-Matcher",
-    "button": "Começar Gratuitamente",
-    "note": "Não é necessário cartão de crédito • 1 otimização gratuita por mês"
-  },
-  "whatsIncluded": "O que está incluído",
-  "currentPlan": {
-    "title": "Seu Plano Atual",
-    "subtitle": "Gerencie sua assinatura Resume-Matcher e uso",
-    "status": {
-      "active": "Ativo",
-      "trial": "Teste",
-      "pastDue": "Em Atraso",
-      "canceled": "Cancelado"
     },
-    "upgrade": {
-      "lifetime": "Atualizar para Pro Vitalício",
-      "monthly": "Iniciar Plano Mensal"
+    "features": {
+      "title": "Por que Resume-Matcher?",
+      "subtitle": "Criado por recrutadores, para candidatos de emprego",
+      "aiPowered": {
+        "title": "Com IA Avançada",
+        "description": "Modelos de IA avançados analisam seu currículo em relação às descrições de vagas e fornecem melhorias específicas e acionáveis."
+      },
+      "atsOptimized": {
+        "title": "Otimizado para ATS",
+        "description": "Vença os sistemas de rastreamento de candidatos com formatação otimizada e posicionamento de palavras-chave que ultrapassa a triagem automatizada."
+      },
+      "realResults": {
+        "title": "Resultados Reais",
+        "description": "Taxa de sucesso de 87% com usuários conseguindo entrevistas em 2 semanas após usar nossos currículos otimizados."
+      }
     },
-    "billing": "Histórico de Cobrança",
-    "cancel": "Cancelar Plano",
-    "canceling": "Cancelando...",
-    "cancelConfirm": "Tem certeza que deseja cancelar sua assinatura?"
-  },
-  "plans": {
-    "free": {
-      "name": "Gratuito",
-      "description": "Perfeito para experimentar a otimização de currículo",
-      "price": "Gratuito",
-      "period": "",
+    "faq": {
+      "title": "Perguntas Frequentes",
+      "subtitle": "Tudo o que você precisa saber sobre nossos planos",
+      "questions": [
+        {
+          "question": "Qual é a diferença entre os planos Gratuito e Pro?",
+          "answer": "O plano Gratuito inclui 1 otimização por mês com recursos básicos. O plano Pro oferece otimizações ilimitadas, modelos de IA avançados, modelos profissionais e suporte prioritário."
+        },
+        {
+          "question": "Posso cancelar minha assinatura a qualquer momento?",
+          "answer": "Sim! Você pode cancelar sua assinatura mensal a qualquer momento. O plano Pro Vitalício é um pagamento único e não pode ser cancelado."
+        },
+        {
+          "question": "Quais formatos de arquivo são suportados?",
+          "answer": "Suportamos PDF, DOCX e arquivos de texto. Você pode baixar seus currículos otimizados em formato .txt (plano Gratuito) ou .docx (plano Pro)."
+        },
+        {
+          "question": "Como funciona a otimização com IA?",
+          "answer": "Nossa IA analisa seu currículo e a descrição da vaga, identificando palavras-chave importantes e áreas de melhoria para aumentar sua compatibilidade com sistemas ATS."
+        },
+        {
+          "question": "Existe uma garantia de devolução de dinheiro?",
+          "answer": "Sim! Oferecemos garantia de devolução de dinheiro em 30 dias. Se você não estiver satisfeito, entre em contato conosco para um reembolso completo."
+        }
+      ]
+    },
+    "trust": {
+      "moneyBack": "Garantia de devolução de dinheiro em 30 dias",
+      "cancelAnytime": "Cancele a qualquer momento",
+      "securePayment": "Pagamento seguro via Stripe"
+    },
+    "cta": {
+      "title": "Pronto para Conquistar seu Emprego dos Sonhos?",
+      "subtitle": "Junte-se a milhares de candidatos que otimizaram seus currículos com Resume-Matcher",
       "button": "Começar Gratuitamente",
-      "features": {
-        "basicAnalysis": "Análise ATS básica",
-        "limitedOptimizations": "1 otimização por mês"
-      }
+      "note": "Não é necessário cartão de crédito • 1 otimização gratuita por mês"
+    },
+    "whatsIncluded": "O que está incluído",
+    "currentPlan": {
+      "title": "Seu Plano Atual",
+      "subtitle": "Gerencie sua assinatura Resume-Matcher e uso",
+      "status": {
+        "active": "Ativo",
+        "trial": "Teste",
+        "pastDue": "Em Atraso",
+        "canceled": "Cancelado"
+      },
+      "upgrade": {
+        "lifetime": "Atualizar para Pro Vitalício",
+        "monthly": "Iniciar Plano Mensal"
+      },
+      "billing": "Histórico de Cobrança",
+      "cancel": "Cancelar Plano",
+      "canceling": "Cancelando...",
+      "cancelConfirm": "Tem certeza que deseja cancelar sua assinatura?"
     },
     "pro": {
       "name": "Pro",
