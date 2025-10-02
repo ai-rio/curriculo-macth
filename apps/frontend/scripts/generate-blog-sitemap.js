@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const matter = 'gray-matter';
+const matter = require('gray-matter');
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://resume-matcher.com';
 const CONTENT_PATH = path.join(process.cwd(), 'content', 'blog');

@@ -1,0 +1,15 @@
+
+
+# Blog sitemap
+Sitemap: https://resume-matcher.com/blog-sitemap.xml
+
+# Allow search engines to crawl blog content
+Allow: /blog/
+Allow: /pt-br/blog/
+Allow: /en/blog/
+
+# Block admin and API routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /static/

@@ -1,4 +1,5 @@
 import BlogClient from '@/components/blog/blog-client';
+import StructuredDataComponent from '@/components/blog/structured-data';
 import { getAllBlogPosts } from '@/lib/blog-data';
 import BlogSEOGenerator from '@/lib/blog-seo';
 
@@ -23,5 +24,15 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const posts = getAllBlogPosts(locale);
 
-  return <BlogClient posts={posts} locale={locale} />;
+  // Generate SEO and structured data
+  const seoData = BlogSEOGenerator.generateBlogListingSEO(locale);
+
+  return (
+    <>
+      {/* Structured Data for SEO */}
+      <StructuredDataComponent data={seoData.structuredData} />
+
+      <BlogClient posts={posts} locale={locale} />
+    </>
+  );
 }
