@@ -1,0 +1,59 @@
+{
+  "header": {
+    "logo": "Resume Matcher",
+    "home": "Início",
+    "dashboard": "Painel",
+    "pricing": "Preços",
+    "blog": "Blog",
+    "about": "Sobre",
+    "contact": "Contato",
+    "login": "Entrar",
+    "signup": "Cadastrar",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "logout": "Sair"
+  },
+  "footer": {
+    "description": "Otimização de currículo com IA para profissionais brasileiros",
+    "navigation": "Navegação",
+    "product": "Produto",
+    "company": "Empresa",
+    "legal": "Legal",
+    "social": "Siga-nos",
+    "copyright": "© {year} Resume Matcher. Todos os direitos reservados.",
+    "links": {
+      "home": "Início",
+      "dashboard": "Painel",
+      "pricing": "Preços",
+      "blog": "Blog",
+      "about": "Sobre Nós",
+      "careers": "Carreiras",
+      "contact": "Contato",
+      "privacy": "Política de Privacidade",
+      "terms": "Termos de Serviço",
+      "cookies": "Política de Cookies"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Painel",
+    "optimizations": "Minhas Otimizações",
+    "resumeLibrary": "Biblioteca de Currículos",
+    "analytics": "Análises",
+    "settings": "Configurações",
+    "billing": "Faturamento",
+    "help": "Ajuda e Suporte"
+  },
+  "breadcrumb": {
+    "home": "Início",
+    "dashboard": "Painel",
+    "optimizations": "Otimizações",
+    "settings": "Configurações",
+    "billing": "Faturamento",
+    "help": "Ajuda"
+  },
+  "language": {
+    "english": "English",
+    "portuguese": "Português",
+    "changeLanguage": "Mudar Idioma"
+  }
+}

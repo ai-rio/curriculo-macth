@@ -1,0 +1,41 @@
+{
+  "navigation": {
+    "home": "Início",
+    "dashboard": "Painel",
+    "pricing": "Preços",
+    "login": "Entrar",
+    "signup": "Cadastrar",
+    "logout": "Sair",
+    "profile": "Perfil"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "submit": "Enviar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "buttons": {
+    "getStarted": "Começar",
+    "uploadResume": "Enviar Currículo",
+    "pasteJobDescription": "Colar Descrição da Vaga",
+    "optimize": "Otimizar Currículo",
+    "download": "Baixar",
+    "upgradeToPro": "Atualizar para Pro"
+  },
+  "status": {
+    "processing": "Processando",
+    "completed": "Concluído",
+    "failed": "Falhou",
+    "pending": "Pendente"
+  }
+}

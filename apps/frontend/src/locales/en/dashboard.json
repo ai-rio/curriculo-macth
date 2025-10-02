@@ -1,0 +1,46 @@
+{
+  "title": "Dashboard",
+  "subtitle": "Track your resume optimization progress",
+  "welcome": "Welcome back, {name}!",
+  "stats": {
+    "optimizationsThisMonth": "Optimizations This Month",
+    "totalOptimizations": "Total Optimizations",
+    "successRate": "Success Rate",
+    "averageScore": "Average Score"
+  },
+  "recentActivity": {
+    "title": "Recent Activity",
+    "noActivity": "No recent activity",
+    "resumeOptimization": "Resume Optimization",
+    "jobMatch": "Job Match Analysis",
+    "scoreImprovement": "Score improved by {points} points"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "newOptimization": "New Optimization",
+    "viewHistory": "View History",
+    "upgradePro": "Upgrade to Pro",
+    "settings": "Settings"
+  },
+  "usage": {
+    "title": "Usage Overview",
+    "freePlan": "Free Plan",
+    "proPlan": "Pro Plan",
+    "usedToday": "Used Today",
+    "remaining": "Remaining",
+    "upgradePrompt": "Upgrade to Pro for unlimited optimizations",
+    "upgradeButton": "Upgrade Now"
+  },
+  "subscription": {
+    "title": "Subscription Status",
+    "active": "Active",
+    "canceled": "Canceled",
+    "pastDue": "Past Due",
+    "lifetime": "Lifetime Deal",
+    "monthly": "Monthly",
+    "free": "Free",
+    "manageSubscription": "Manage Subscription",
+    "cancelSubscription": "Cancel Subscription",
+    "renewSubscription": "Renew Subscription"
+  }
+}

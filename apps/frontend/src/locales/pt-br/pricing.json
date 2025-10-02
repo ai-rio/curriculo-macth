@@ -1,0 +1,90 @@
+{
+  "title": "Planos de Preços",
+  "subtitle": "Escolha o plano perfeito para suas necessidades de carreira",
+  "billing": {
+    "monthly": "Mensal",
+    "lifetime": "Vitalícia",
+    "save": "Economize {percentage}%",
+    "billedOnce": "Cobrado uma vez"
+  },
+  "plans": {
+    "free": {
+      "name": "Gratuito",
+      "price": "R$ 0",
+      "description": "Perfeito para experimentar nosso serviço",
+      "features": [
+        "1 otimização por mês",
+        "Análise de IA básica",
+        "Download PDF",
+        "Suporte por e-mail"
+      ],
+      "cta": "Começar",
+      "popular": false
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "R$ 24,99",
+      "description": "Para quem está sério em encontrar emprego",
+      "features": [
+        "Otimizações ilimitadas",
+        "Modelos de IA avançados",
+        "Múltiplos formatos de download",
+        "Suporte prioritário",
+        "Modelos profissionais",
+        "Pontuação ATS"
+      ],
+      "cta": "Iniciar Teste Gratuito",
+      "popular": true
+    },
+    "lifetime": {
+      "name": "Oferta Vitalícia",
+      "price": "R$ 147",
+      "description": "Pagamento único, acesso para sempre",
+      "features": [
+        "Tudo do plano Pro",
+        "Todas as atualizações futuras",
+        "Sem taxas recorrentes",
+        "Pedidos de recursos prioritários",
+        "Suporte VIP"
+      ],
+      "cta": "Obter Acesso Vitalício",
+      "popular": false
+    }
+  },
+  "guarantee": {
+    "title": "Garantia de Devolução de Dinheiro de 30 Dias",
+    "description": "Não satisfeito? Receba reembolso total em 30 dias."
+  },
+  "faq": {
+    "title": "Perguntas Frequentes",
+    "questions": [
+      {
+        "q": "Posso mudar de plano a qualquer momento?",
+        "a": "Sim, você pode atualizar, fazer downgrade ou cancelar sua assinatura a qualquer momento."
+      },
+      {
+        "q": "Quais formatos de arquivo vocês suportam?",
+        "a": "Suportamos PDF, DOCX e TXT para currículos."
+      },
+      {
+        "q": "Como funciona a otimização com IA?",
+        "a": "Nossa IA analisa seu currículo contra descrições de vagas e sugere melhorias para aumentar suas chances de conseguir entrevistas."
+      },
+      {
+        "q": "Meus dados estão seguros?",
+        "a": "Sim, usamos criptografia padrão da indústria e nunca compartilhamos suas informações pessoais."
+      }
+    ]
+  },
+  "checkout": {
+    "title": "Complete sua Compra",
+    "subtitle": "Pagamento seguro powered by Stripe",
+    "cardDetails": "Dados do Cartão",
+    "email": "Endereço de E-mail",
+    "name": "Nome Completo",
+    "payButton": "Pagar {amount}",
+    "processing": "Processando...",
+    "success": "Pagamento Bem-sucedido!",
+    "error": "Pagamento falhou. Tente novamente."
+  }
+}

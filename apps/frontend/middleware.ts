@@ -1,25 +1,16 @@
 /**
- * Next.js middleware for protecting routes and managing Supabase sessions
+ * Next.js middleware for protecting routes, managing Supabase sessions, and handling internationalization
  * Reference: https://nextjs.org/docs/app/building-your-application/routing/middleware
  */
 
-import { type NextRequest } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './src/i18n/routing';
 
-import { updateSession } from '@/lib/supabase/middleware';
-
-export async function middleware(request: NextRequest) {
-  return await updateSession(request);
-}
+export default createMiddleware(routing);
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (static files)
-     * - public folder files
-     */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  // Match all pathnames except for
+  // - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
+  // - … the ones containing a dot (e.g. `favicon.ico`)
+  matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
 };

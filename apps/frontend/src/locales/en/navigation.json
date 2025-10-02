@@ -1,0 +1,59 @@
+{
+  "header": {
+    "logo": "Resume Matcher",
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "pricing": "Pricing",
+    "blog": "Blog",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Sign Up",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "footer": {
+    "description": "AI-powered resume optimization for Brazilian job seekers",
+    "navigation": "Navigation",
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "social": "Follow Us",
+    "copyright": "© {year} Resume Matcher. All rights reserved.",
+    "links": {
+      "home": "Home",
+      "dashboard": "Dashboard",
+      "pricing": "Pricing",
+      "blog": "Blog",
+      "about": "About Us",
+      "careers": "Careers",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "optimizations": "My Optimizations",
+    "resumeLibrary": "Resume Library",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "billing": "Billing",
+    "help": "Help & Support"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "optimizations": "Optimizations",
+    "settings": "Settings",
+    "billing": "Billing",
+    "help": "Help"
+  },
+  "language": {
+    "english": "English",
+    "portuguese": "Português",
+    "changeLanguage": "Change Language"
+  }
+}

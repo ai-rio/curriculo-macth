@@ -1,0 +1,99 @@
+{
+  "upload": {
+    "title": "Upload Your Resume",
+    "subtitle": "Drag and drop your resume file or click to browse",
+    "supportedFormats": "Supported formats: PDF, DOCX, TXT",
+    "maxSize": "Maximum file size: 10MB",
+    "dropzone": {
+      "dragText": "Drag your resume here",
+      "orText": "or",
+      "browseText": "browse files"
+    },
+    "error": {
+      "fileTooBig": "File size exceeds 10MB limit",
+      "invalidFormat": "Unsupported file format",
+      "uploadFailed": "Upload failed. Please try again.",
+      "corruptedFile": "File appears to be corrupted"
+    }
+  },
+  "jobDescription": {
+    "title": "Job Description",
+    "subtitle": "Paste the job description you want to apply for",
+    "placeholder": "Paste the complete job description here...",
+    "analyzeButton": "Analyze Job",
+    "error": {
+      "emptyDescription": "Please enter a job description",
+      "tooShort": "Job description is too short",
+      "analysisFailed": "Failed to analyze job description"
+    }
+  },
+  "optimization": {
+    "title": "Resume Optimization",
+    "subtitle": "Our AI is optimizing your resume for this position",
+    "steps": [
+      "Analyzing job requirements",
+      "Extracting key skills and keywords",
+      "Comparing with your resume",
+      "Generating optimized version"
+    ],
+    "estimatedTime": "Estimated time: {time}",
+    "progress": "Progress: {percentage}%",
+    "status": {
+      "analyzing": "Analyzing job description...",
+      "processing": "Processing your resume...",
+      "optimizing": "Optimizing content...",
+      "finalizing": "Finalizing results..."
+    }
+  },
+  "results": {
+    "title": "Optimization Results",
+    "subtitle": "Your resume has been optimized!",
+    "originalScore": "Original Score: {score}",
+    "optimizedScore": "Optimized Score: {score}",
+    "improvement": "Improvement: {points} points",
+    "changes": {
+      "title": "Key Changes Made",
+      "keywords": "Added {count} relevant keywords",
+      "skills": "Highlighted {count} key skills",
+      "experience": "Restructured experience section",
+      "format": "Improved ATS readability"
+    },
+    "downloadOptions": {
+      "title": "Download Options",
+      "pdf": "Download PDF",
+      "docx": "Download DOCX",
+      "txt": "Download TXT"
+    },
+    "actions": {
+      "download": "Download Optimized Resume",
+      "compare": "Compare with Original",
+      "optimizeAnother": "Optimize Another Resume",
+      "share": "Share Results"
+    }
+  },
+  "comparison": {
+    "title": "Resume Comparison",
+    "subtitle": "Side-by-side comparison of original vs optimized",
+    "original": "Original Resume",
+    "optimized": "Optimized Resume",
+    "changes": {
+      "added": "Added",
+      "removed": "Removed",
+      "modified": "Modified"
+    }
+  },
+  "ats": {
+    "title": "ATS Compatibility Score",
+    "subtitle": "How well your resume matches the job requirements",
+    "excellent": "Excellent (90-100%)",
+    "good": "Good (70-89%)",
+    "fair": "Fair (50-69%)",
+    "poor": "Poor (below 50%)",
+    "recommendations": {
+      "title": "Recommendations",
+      "keywords": "Add these keywords: {keywords}",
+      "skills": "Highlight these skills: {skills}",
+      "format": "Improve formatting for better ATS parsing"
+    }
+  }
+}

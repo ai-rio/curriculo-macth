@@ -1,0 +1,46 @@
+{
+  "title": "Painel",
+  "subtitle": "Acompanhe seu progresso de otimização de currículo",
+  "welcome": "Bem-vindo de volta, {name}!",
+  "stats": {
+    "optimizationsThisMonth": "Otimizações Este Mês",
+    "totalOptimizations": "Total de Otimizações",
+    "successRate": "Taxa de Sucesso",
+    "averageScore": "Pontuação Média"
+  },
+  "recentActivity": {
+    "title": "Atividade Recente",
+    "noActivity": "Nenhuma atividade recente",
+    "resumeOptimization": "Otimização de Currículo",
+    "jobMatch": "Análise de Compatibilidade com Vaga",
+    "scoreImprovement": "Pontuação melhorada em {points} pontos"
+  },
+  "quickActions": {
+    "title": "Ações Rápidas",
+    "newOptimization": "Nova Otimização",
+    "viewHistory": "Ver Histórico",
+    "upgradePro": "Atualizar para Pro",
+    "settings": "Configurações"
+  },
+  "usage": {
+    "title": "Visão Geral de Uso",
+    "freePlan": "Plano Gratuito",
+    "proPlan": "Plano Pro",
+    "usedToday": "Usado Hoje",
+    "remaining": "Restante",
+    "upgradePrompt": "Atualize para Pro para otimizações ilimitadas",
+    "upgradeButton": "Atualizar Agora"
+  },
+  "subscription": {
+    "title": "Status da Assinatura",
+    "active": "Ativa",
+    "canceled": "Cancelada",
+    "pastDue": "Vencida",
+    "lifetime": "Oferta Vitalícia",
+    "monthly": "Mensal",
+    "free": "Gratuito",
+    "manageSubscription": "Gerenciar Assinatura",
+    "cancelSubscription": "Cancelar Assinatura",
+    "renewSubscription": "Renovar Assinatura"
+  }
+}

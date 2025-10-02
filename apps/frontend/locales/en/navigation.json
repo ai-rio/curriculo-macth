@@ -1,0 +1,118 @@
+{
+  "header": {
+    "logo": "Resume-Matcher",
+    "navigation": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About",
+      "blog": "Blog",
+      "contact": "Contact"
+    },
+    "actions": {
+      "login": "Login",
+      "signup": "Sign Up",
+      "dashboard": "Dashboard",
+      "profile": "Profile"
+    },
+    "mobile": {
+      "menu": "Menu",
+      "close": "Close"
+    }
+  },
+  "footer": {
+    "brand": {
+      "name": "Resume-Matcher",
+      "tagline": "The ultimate AI-powered resume optimization tool",
+      "description": "Stop getting rejected by ATS systems. Optimize your resume with AI and land more interviews."
+    },
+    "navigation": {
+      "product": {
+        "title": "Product",
+        "items": {
+          "features": "Features",
+          "pricing": "Pricing",
+          "templates": "Templates",
+          "analytics": "Analytics"
+        }
+      },
+      "resources": {
+        "title": "Resources",
+        "items": {
+          "blog": "Blog",
+          "guides": "Guides",
+          "faq": "FAQ",
+          "support": "Support"
+        }
+      },
+      "company": {
+        "title": "Company",
+        "items": {
+          "about": "About",
+          "careers": "Careers",
+          "contact": "Contact",
+          "privacy": "Privacy"
+        }
+      }
+    },
+    "legal": {
+      "title": "Legal",
+      "items": {
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "cookies": "Cookie Policy",
+        "gdpr": "GDPR"
+      }
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "contact@resume-matcher.com",
+      "phone": "+1 (555) 123-4567",
+      "address": "San Francisco, CA - USA"
+    },
+    "social": {
+      "title": "Follow Us",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "facebook": "Facebook"
+    },
+    "language": {
+      "title": "Language",
+      "portuguese": "Português",
+      "english": "English"
+    },
+    "copyright": "© 2025 Resume-Matcher. All rights reserved.",
+    "madeWith": "Made with ❤️ in Brazil"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "current": "Current"
+  },
+  "sidebar": {
+    "toggle": "Toggle sidebar",
+    "close": "Close sidebar"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of",
+    "showing": "Showing",
+    "to": "to",
+    "ofTotal": "of",
+    "results": "results"
+  },
+  "search": {
+    "placeholder": "Search...",
+    "noResults": "No results found",
+    "suggestions": "Suggestions",
+    "recent": "Recent searches",
+    "clear": "Clear search"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "loading": "Loading notifications..."
+  }
+}

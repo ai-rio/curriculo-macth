@@ -1,0 +1,71 @@
+{
+  "404": {
+    "title": "Page Not Found",
+    "subtitle": "The page you're looking for doesn't exist.",
+    "description": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+    "actions": {
+      "goHome": "Go Home",
+      "goBack": "Go Back",
+      "search": "Search"
+    }
+  },
+  "500": {
+    "title": "Server Error",
+    "subtitle": "Something went wrong on our end.",
+    "description": "We're sorry, but something went wrong on our servers. We're working to fix this issue.",
+    "actions": {
+      "refresh": "Refresh Page",
+      "goHome": "Go Home",
+      "contact": "Contact Support"
+    }
+  },
+  "auth": {
+    "unauthorized": "You need to be logged in to access this page.",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "invalidCredentials": "Invalid email or password.",
+    "emailNotVerified": "Please verify your email address.",
+    "accountLocked": "Your account has been locked. Please contact support.",
+    "signupDisabled": "Account registration is currently disabled."
+  },
+  "network": {
+    "connectionError": "Connection error. Please check your internet connection.",
+    "timeoutError": "Request timed out. Please try again.",
+    "serverError": "Server error. Please try again later.",
+    "offline": "You appear to be offline. Please check your connection."
+  },
+  "file": {
+    "uploadFailed": "File upload failed. Please try again.",
+    "fileTooBig": "File size exceeds the maximum limit of 10MB.",
+    "invalidFormat": "Unsupported file format. Please use PDF, DOCX, or TXT.",
+    "corruptedFile": "The file appears to be corrupted or damaged."
+  },
+  "payment": {
+    "paymentFailed": "Payment failed. Please try again.",
+    "cardDeclined": "Your card was declined. Please use a different card.",
+    "insufficientFunds": "Insufficient funds. Please use a different card.",
+    "processingError": "Payment processing error. Please try again.",
+    "subscriptionFailed": "Failed to create subscription. Please try again."
+  },
+  "optimization": {
+    "failedToAnalyze": "Failed to analyze resume. Please try again.",
+    "jobAnalysisFailed": "Failed to analyze job description. Please try again.",
+    "optimizationFailed": "Optimization failed. Please try again.",
+    "quotaExceeded": "You've reached your monthly optimization limit. Upgrade to Pro for unlimited optimizations.",
+    "serviceUnavailable": "Optimization service is temporarily unavailable. Please try again later."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "emailInvalid": "Please enter a valid email address.",
+    "passwordTooShort": "Password must be at least 8 characters long.",
+    "passwordMismatch": "Passwords do not match.",
+    "nameInvalid": "Please enter a valid name.",
+    "phoneInvalid": "Please enter a valid phone number.",
+    "urlInvalid": "Please enter a valid URL."
+  },
+  "generic": {
+    "unknownError": "An unknown error occurred.",
+    "tryAgain": "Please try again.",
+    "contactSupport": "If the problem persists, please contact support.",
+    "reportIssue": "Report this issue"
+  }
+}
