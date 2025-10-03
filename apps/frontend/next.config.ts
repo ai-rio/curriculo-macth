@@ -39,8 +39,12 @@ const nextConfig: NextConfig = {
 const withMDXConfig = withMDX({
   extension: /\.mdx?$/,
   options: {
-    remarkPlugins: [],
-    rehypePlugins: [],
+    remarkPlugins: [require('remark-gfm')],
+    rehypePlugins: [
+      require('rehype-slug'),
+      [require('rehype-autolink-headings'), { behavior: 'wrap' }],
+      require('rehype-highlight'),
+    ],
   },
 });
 

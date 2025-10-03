@@ -25,6 +25,7 @@
     "avgReadingTime": "Tempo Médio de Leitura",
     "showingResults": "Mostrando {count} resultados",
     "searchPlaceholder": "Buscar posts...",
+    "searchingFor": "Buscando por",
     "filters": "Filtros",
     "clear": "Limpar",
     "clearFilters": "Limpar Filtros",

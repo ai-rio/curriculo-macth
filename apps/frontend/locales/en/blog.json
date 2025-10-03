@@ -25,6 +25,7 @@
     "avgReadingTime": "Avg Reading Time",
     "showingResults": "Showing {count} results",
     "searchPlaceholder": "Search posts...",
+    "searchingFor": "Searching for",
     "filters": "Filters",
     "clear": "Clear",
     "clearFilters": "Clear Filters",
