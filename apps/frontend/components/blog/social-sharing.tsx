@@ -12,7 +12,7 @@ import {
   Twitter,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SocialSharingProps {
   url: string;
@@ -42,6 +42,12 @@ export default function SocialSharing({
   const t = useTranslations('blog');
   const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [hasNativeShare, setHasNativeShare] = useState(false);
+
+  // Detect native sharing capability on client-side only
+  useEffect(() => {
+    setHasNativeShare(typeof navigator !== 'undefined' && 'share' in navigator);
+  }, []);
 
   // Social media sharing buttons
   const shareButtons: ShareButton[] = [
@@ -148,7 +154,7 @@ export default function SocialSharing({
       {/* Social Sharing Buttons */}
       <div className="flex flex-wrap gap-3">
         {/* Native Share (Mobile) */}
-        {typeof navigator !== 'undefined' && 'share' in navigator && (
+        {hasNativeShare && (
           <button
             onClick={nativeShare}
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"

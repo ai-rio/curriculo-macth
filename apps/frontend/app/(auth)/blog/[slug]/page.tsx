@@ -2,13 +2,13 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
-import { BlogPost } from '@/lib/blog-utils';
-import { getBlogPostBySlug, getAllBlogPosts } from '@/lib/blog-data';
 import BlogPostHeader from '@/components/blog/blog-post-header';
 import EnhancedBlogContent from '@/components/blog/enhanced-blog-content';
 import RelatedPosts from '@/components/blog/related-posts';
 import SocialSharing from '@/components/blog/social-sharing';
 import StructuredData from '@/components/blog/structured-data';
+import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog-data';
+import { BlogPost } from '@/lib/blog-utils';
 
 interface BlogPostPageProps {
   params: Promise<{

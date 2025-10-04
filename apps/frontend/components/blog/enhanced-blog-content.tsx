@@ -1,17 +1,34 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
+import { useEffect, useState } from 'react';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeKatex from 'rehype-katex';
+import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeSlug from 'rehype-slug';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 import { processMarkdownContentSync } from '@/lib/markdown-processor';
 import { cn } from '@/lib/utils';
+
+// Import QuoteKit-style components
+import {
+  CelebrationCallout,
+  ChallengeCallout,
+  ErrorCallout,
+  InfoCallout,
+  MotivationCallout,
+  QuestCallout,
+  RewardCallout,
+  SuccessCallout,
+  TipCallout,
+  WarningCallout,
+} from './callouts';
+import { FAQAccordion } from './faq/faq-accordion';
+import { KeyTakeaways } from './key-takeaways';
+import TableOfContents from './table-of-contents';
 
 interface EnhancedBlogContentProps {
   content: string;
@@ -257,17 +274,96 @@ const mdxComponents = {
   td: ({ children, ...props }: any) => (
     <td
       className="
-      p-4 
-      text-lg 
-      text-gray-700 
-      border-b 
-      border-gray-100 
+      p-4
+      text-lg
+      text-gray-700
+      border-b
+      border-gray-100
       last:border-b-0
     "
       {...props}
     >
       {children}
     </td>
+  ),
+
+  // QuoteKit-style components
+  InfoCallout: ({ children, title, ...props }: any) => (
+    <InfoCallout title={title} {...props}>
+      {children}
+    </InfoCallout>
+  ),
+  WarningCallout: ({ children, title, ...props }: any) => (
+    <WarningCallout title={title} {...props}>
+      {children}
+    </WarningCallout>
+  ),
+  SuccessCallout: ({ children, title, ...props }: any) => (
+    <SuccessCallout title={title} {...props}>
+      {children}
+    </SuccessCallout>
+  ),
+  ErrorCallout: ({ children, title, ...props }: any) => (
+    <ErrorCallout title={title} {...props}>
+      {children}
+    </ErrorCallout>
+  ),
+  TipCallout: ({ children, title, ...props }: any) => (
+    <TipCallout title={title} {...props}>
+      {children}
+    </TipCallout>
+  ),
+  CelebrationCallout: ({ children, title, ...props }: any) => (
+    <CelebrationCallout title={title} {...props}>
+      {children}
+    </CelebrationCallout>
+  ),
+  ChallengeCallout: ({ children, title, ...props }: any) => (
+    <ChallengeCallout title={title} {...props}>
+      {children}
+    </ChallengeCallout>
+  ),
+  MotivationCallout: ({ children, title, ...props }: any) => (
+    <MotivationCallout title={title} {...props}>
+      {children}
+    </MotivationCallout>
+  ),
+  QuestCallout: ({ children, title, ...props }: any) => (
+    <QuestCallout title={title} {...props}>
+      {children}
+    </QuestCallout>
+  ),
+  RewardCallout: ({ children, title, ...props }: any) => (
+    <RewardCallout title={title} {...props}>
+      {children}
+    </RewardCallout>
+  ),
+
+  // Table of Contents component
+  TableOfContents: ({ headings, title, ...props }: any) => (
+    <TableOfContents
+      headings={headings}
+      title={title || 'Table of Contents'}
+      enableScrollTracking={true}
+      {...props}
+    />
+  ),
+
+  // Key Takeaways component
+  KeyTakeaways: ({ children, title, items, ...props }: any) => (
+    <KeyTakeaways title={title || 'Key Takeaways'} items={items} {...props}>
+      {children}
+    </KeyTakeaways>
+  ),
+
+  // FAQ Accordion component
+  FAQAccordion: ({ items, title, ...props }: any) => (
+    <FAQAccordion
+      items={items}
+      title={title || 'Frequently Asked Questions'}
+      allowMultipleOpen={false}
+      {...props}
+    />
   ),
 };
 
