@@ -51,7 +51,7 @@ instance/
 # AI Development Tools
 .bmad-core/
 .claude/
-
+.serena/
 
 # Generated digest files
 digest.txt
