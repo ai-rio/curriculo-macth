@@ -45,12 +45,7 @@ export default function BlogPostHeader({
 
       <div className="flex items-center justify-center gap-4 text-sm text-gray-500 border-t border-b border-gray-200 py-4">
         <time>
-          {t('meta.publishedOn')}{' '}
-          {new Date(date).toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          {t('meta.publishedOn')} {date}
         </time>
 
         {author && (
