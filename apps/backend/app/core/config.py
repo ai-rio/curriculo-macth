@@ -11,7 +11,15 @@ class Settings(BaseSettings):
     # which is copied to the user's .env file upon setup.
     PROJECT_NAME: str = "Resume Matcher"
     FRONTEND_PATH: str = os.path.join(os.path.dirname(__file__), "frontend", "assets")
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    ALLOWED_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "http://localhost:3002",
+        "http://127.0.0.1:3002",
+    ]
+    ENV: str = "development"  # Development environment by default
     DB_ECHO: bool = False
     PYTHONDONTWRITEBYTECODE: int = 1
     SYNC_DATABASE_URL: str | None = None

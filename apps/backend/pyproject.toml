@@ -64,6 +64,7 @@ dependencies = [
     "typing_extensions==4.13.1",
     "urllib3==2.4.0",
     "uvicorn[standard]==0.34.0",
+    "reportlab>=4.4.4",
 ]
 
 [build-system]
@@ -105,3 +106,10 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+]

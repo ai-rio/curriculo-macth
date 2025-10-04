@@ -6,6 +6,7 @@ import {
   type DragEvent,
   type InputHTMLAttributes,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -101,7 +102,31 @@ export const useFileUpload = (
     isUploadingGlobal: false,
   });
 
+  // State to track deferred callbacks
+  const [deferredCallbacks, setDeferredCallbacks] = useState<{
+    success: { file: FileWithPreview; response: Record<string, unknown> } | null;
+    error: { file: FileWithPreview; error: string } | null;
+  }>({
+    success: null,
+    error: null,
+  });
+
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Process deferred callbacks in useEffect to avoid render-time state updates
+  useEffect(() => {
+    if (deferredCallbacks.success) {
+      onUploadSuccess?.(deferredCallbacks.success.file, deferredCallbacks.success.response);
+      setDeferredCallbacks((prev) => ({ ...prev, success: null }));
+    }
+  }, [deferredCallbacks.success, onUploadSuccess]);
+
+  useEffect(() => {
+    if (deferredCallbacks.error) {
+      onUploadError?.(deferredCallbacks.error.file, deferredCallbacks.error.error);
+      setDeferredCallbacks((prev) => ({ ...prev, error: null }));
+    }
+  }, [deferredCallbacks.error, onUploadError]);
 
   const validateFile = useCallback(
     (file: File): string | null => {
@@ -149,151 +174,168 @@ export const useFileUpload = (
     return `${file.name}-${file.size}-${file.lastModified}-${Math.random().toString(36).substring(2, 9)}`;
   }, []);
 
-  const _uploadFileInternal = async (fileToUpload: FileWithPreview) => {
-    // Ensure fileToUpload.file is a File instance for upload
-    if (!(fileToUpload.file instanceof File)) {
-      const errorMsg = `Cannot upload "${(fileToUpload.file as FileMetadata).name}"; it's not a valid file object for direct upload.`;
-      console.error(errorMsg, fileToUpload);
-      // Update this specific file's metadata with an error
-      const updatedFileWithMetaError: FileWithPreview = {
-        ...fileToUpload,
-        file: {
-          ...(fileToUpload.file as FileMetadata), // Keep existing metadata
-          uploadError: errorMsg,
-          uploaded: false,
-        },
-      };
-      setState((prev) => ({
-        ...prev,
-        files: prev.files.map((f) =>
-          f.id === updatedFileWithMetaError.id ? updatedFileWithMetaError : f
-        ),
-        errors: [...prev.errors, errorMsg], // Add to general errors too
-        isUploadingGlobal: false, // Assuming this path means no actual network upload starts
-      }));
-      onUploadError?.(updatedFileWithMetaError, errorMsg);
-      return;
-    }
+  const _uploadFileInternal = useCallback(
+    async (fileToUpload: FileWithPreview) => {
+      // Ensure fileToUpload.file is a File instance for upload
+      if (!(fileToUpload.file instanceof File)) {
+        const errorMsg = `Cannot upload "${(fileToUpload.file as FileMetadata).name}"; it's not a valid file object for direct upload.`;
+        console.error(errorMsg, fileToUpload);
+        // Update this specific file's metadata with an error
+        const updatedFileWithMetaError: FileWithPreview = {
+          ...fileToUpload,
+          file: {
+            ...(fileToUpload.file as FileMetadata), // Keep existing metadata
+            uploadError: errorMsg,
+            uploaded: false,
+          },
+        };
+        setState((prev) => ({
+          ...prev,
+          files: prev.files.map((f) =>
+            f.id === updatedFileWithMetaError.id ? updatedFileWithMetaError : f
+          ),
+          errors: [...prev.errors, errorMsg], // Add to general errors too
+          isUploadingGlobal: false, // Assuming this path means no actual network upload starts
+        }));
+        setDeferredCallbacks((prev) => ({
+          ...prev,
+          error: { file: updatedFileWithMetaError, error: errorMsg },
+        }));
+        return;
+      }
 
-    if (!uploadUrl) {
-      const errorMsg = 'Upload URL is not configured.';
-      console.warn(errorMsg, 'File not uploaded:', fileToUpload.file.name);
-      // Update file metadata to reflect it wasn't uploaded due to config
-      const fileWithConfigError: FileWithPreview = {
-        ...fileToUpload,
-        file: {
-          // Convert to FileMetadata with error
-          name: fileToUpload.file.name,
-          size: fileToUpload.file.size,
-          type: fileToUpload.file.type,
-          id: fileToUpload.id,
-          url: fileToUpload.preview || '',
-          uploaded: false,
-          uploadError: errorMsg,
-        },
-      };
-      setState((prev) => ({
-        ...prev,
-        files: prev.files.map((f) => (f.id === fileWithConfigError.id ? fileWithConfigError : f)),
-        errors: [...prev.errors, errorMsg],
-        isUploadingGlobal: false,
-      }));
-      onUploadError?.(fileWithConfigError, errorMsg);
-      return;
-    }
+      if (!uploadUrl) {
+        const errorMsg = 'Upload URL is not configured.';
+        console.warn(errorMsg, 'File not uploaded:', fileToUpload.file.name);
+        // Update file metadata to reflect it wasn't uploaded due to config
+        const fileWithConfigError: FileWithPreview = {
+          ...fileToUpload,
+          file: {
+            // Convert to FileMetadata with error
+            name: fileToUpload.file.name,
+            size: fileToUpload.file.size,
+            type: fileToUpload.file.type,
+            id: fileToUpload.id,
+            url: fileToUpload.preview || '',
+            uploaded: false,
+            uploadError: errorMsg,
+          },
+        };
+        setState((prev) => ({
+          ...prev,
+          files: prev.files.map((f) => (f.id === fileWithConfigError.id ? fileWithConfigError : f)),
+          errors: [...prev.errors, errorMsg],
+          isUploadingGlobal: false,
+        }));
+        setDeferredCallbacks((prev) => ({
+          ...prev,
+          error: { file: fileWithConfigError, error: errorMsg },
+        }));
+        return;
+      }
 
-    const formData = new FormData();
-    formData.append('file', fileToUpload.file); // FastAPI expects 'file' field
+      const formData = new FormData();
+      formData.append('file', fileToUpload.file); // FastAPI expects 'file' field
 
-    setState((prev) => ({ ...prev, isUploadingGlobal: true, errors: [] }));
+      setState((prev) => ({ ...prev, isUploadingGlobal: true, errors: [] }));
 
-    try {
-      const response = await fetch(uploadUrl, {
-        method: 'POST',
-        body: formData,
-      });
+      try {
+        const response = await fetch(uploadUrl, {
+          method: 'POST',
+          body: formData,
+        });
 
-      let responseData: Record<string, unknown> = {}; // Initialize for broader scope
-      const contentType = response.headers.get('content-type');
+        let responseData: Record<string, unknown> = {}; // Initialize for broader scope
+        const contentType = response.headers.get('content-type');
 
-      if (!response.ok) {
-        let errorDetail = `Upload failed for ${fileToUpload.file.name}. Status: ${response.status} ${response.statusText}`;
-        try {
-          const errorText = await response.text();
-          errorDetail += ` - Server response: ${errorText.substring(0, 200)}${errorText.length > 200 ? '...' : ''}`;
-        } catch (textError: unknown) {
-          console.warn('Could not read error response text:', textError);
+        if (!response.ok) {
+          let errorDetail = `Upload failed for ${fileToUpload.file.name}. Status: ${response.status} ${response.statusText}`;
+          try {
+            const errorText = await response.text();
+            errorDetail += ` - Server response: ${errorText.substring(0, 200)}${errorText.length > 200 ? '...' : ''}`;
+          } catch (textError: unknown) {
+            console.warn('Could not read error response text:', textError);
+          }
+          throw new Error(errorDetail);
         }
-        throw new Error(errorDetail);
+
+        if (contentType && contentType.includes('application/json')) {
+          responseData = (await response.json()) as Record<string, unknown>;
+        } else {
+          // Handle non-JSON or missing Content-Type response if necessary,
+          // or assume success if response.ok and no JSON is expected for some cases.
+          // For now, we'll assume JSON is expected on success.
+          console.warn(
+            `Response for ${fileToUpload.file.name} was not JSON. Content-Type: ${contentType}`
+          );
+          // If JSON is strictly required, this could be an error condition:
+          // throw new Error(`Unexpected response type: ${contentType}. Expected JSON.`);
+        }
+
+        const successfullyUploadedFile: FileWithPreview = {
+          ...fileToUpload,
+          file: {
+            // This is FileMetadata
+            name: fileToUpload.file.name,
+            size: fileToUpload.file.size,
+            type: fileToUpload.file.type,
+            id: fileToUpload.id, // Use existing FileWithPreview ID as FileMetadata ID
+            url:
+              typeof responseData.file_url === 'string'
+                ? responseData.file_url // Assuming server returns 'file_url'
+                : typeof responseData.url === 'string'
+                  ? responseData.url
+                  : fileToUpload.preview || '',
+            uploaded: true,
+          },
+        };
+
+        setState((prev) => {
+          const updatedFiles = prev.files.map((f) =>
+            f.id === successfullyUploadedFile.id ? successfullyUploadedFile : f
+          );
+          setDeferredCallbacks((cb) => ({
+            ...cb,
+            success: { file: successfullyUploadedFile, response: responseData },
+          }));
+          return { ...prev, files: updatedFiles, isUploadingGlobal: false };
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : `Error uploading ${(fileToUpload.file as File).name}.`;
+        const fileWithError: FileWithPreview = {
+          ...fileToUpload,
+          file: {
+            // This is FileMetadata
+            name: (fileToUpload.file as File).name,
+            size: (fileToUpload.file as File).size,
+            type: (fileToUpload.file as File).type,
+            id: fileToUpload.id,
+            url: fileToUpload.preview || '',
+            uploaded: false,
+            uploadError: errorMessage,
+          },
+        };
+        setState((prev) => {
+          const updatedFiles = prev.files.map((f) =>
+            f.id === fileWithError.id ? fileWithError : f
+          );
+          // Add to general errors in addition to specific file error
+          const newErrors = prev.errors.filter((e) => !e.includes(fileWithError.file.name)); // Avoid duplicate general messages for the same file
+          newErrors.push(errorMessage);
+
+          setDeferredCallbacks((cb) => ({
+            ...cb,
+            error: { file: fileWithError, error: errorMessage },
+          }));
+          return { ...prev, files: updatedFiles, errors: newErrors, isUploadingGlobal: false };
+        });
       }
-
-      if (contentType && contentType.includes('application/json')) {
-        responseData = (await response.json()) as Record<string, unknown>;
-      } else {
-        // Handle non-JSON or missing Content-Type response if necessary,
-        // or assume success if response.ok and no JSON is expected for some cases.
-        // For now, we'll assume JSON is expected on success.
-        console.warn(
-          `Response for ${fileToUpload.file.name} was not JSON. Content-Type: ${contentType}`
-        );
-        // If JSON is strictly required, this could be an error condition:
-        // throw new Error(`Unexpected response type: ${contentType}. Expected JSON.`);
-      }
-
-      const successfullyUploadedFile: FileWithPreview = {
-        ...fileToUpload,
-        file: {
-          // This is FileMetadata
-          name: fileToUpload.file.name,
-          size: fileToUpload.file.size,
-          type: fileToUpload.file.type,
-          id: fileToUpload.id, // Use existing FileWithPreview ID as FileMetadata ID
-          url:
-            typeof responseData.file_url === 'string'
-              ? responseData.file_url // Assuming server returns 'file_url'
-              : typeof responseData.url === 'string'
-                ? responseData.url
-                : fileToUpload.preview || '',
-          uploaded: true,
-        },
-      };
-
-      setState((prev) => {
-        const updatedFiles = prev.files.map((f) =>
-          f.id === successfullyUploadedFile.id ? successfullyUploadedFile : f
-        );
-        onUploadSuccess?.(successfullyUploadedFile, responseData);
-        return { ...prev, files: updatedFiles, isUploadingGlobal: false };
-      });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : `Error uploading ${(fileToUpload.file as File).name}.`;
-      const fileWithError: FileWithPreview = {
-        ...fileToUpload,
-        file: {
-          // This is FileMetadata
-          name: (fileToUpload.file as File).name,
-          size: (fileToUpload.file as File).size,
-          type: (fileToUpload.file as File).type,
-          id: fileToUpload.id,
-          url: fileToUpload.preview || '',
-          uploaded: false,
-          uploadError: errorMessage,
-        },
-      };
-      setState((prev) => {
-        const updatedFiles = prev.files.map((f) => (f.id === fileWithError.id ? fileWithError : f));
-        // Add to general errors in addition to specific file error
-        const newErrors = prev.errors.filter((e) => !e.includes(fileWithError.file.name)); // Avoid duplicate general messages for the same file
-        newErrors.push(errorMessage);
-
-        onUploadError?.(fileWithError, errorMessage);
-        return { ...prev, files: updatedFiles, errors: newErrors, isUploadingGlobal: false };
-      });
-    }
-  };
+    },
+    [uploadUrl]
+  );
 
   const addFilesAndUpload = useCallback(
     (newFilesInput: FileList | File[]) => {
@@ -432,7 +474,7 @@ export const useFileUpload = (
       createPreview, // Other useCallback deps
       onFilesChange,
       onFilesAdded, // Callbacks
-      // _uploadFileInternal is not directly a dep but its logic is tied to uploadUrl etc.
+      _uploadFileInternal,
       // setState itself is stable.
     ]
   );
