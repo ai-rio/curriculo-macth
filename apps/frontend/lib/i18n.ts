@@ -4,6 +4,129 @@
  */
 
 /**
+ * Authentication translations
+ */
+export const auth = {
+  // Login form
+  login: {
+    title: 'Entrar na sua Conta',
+    subtitle: 'Faça login para acessar o dashboard de otimização',
+    email: 'Email',
+    emailPlaceholder: 'seu@email.com',
+    password: 'Senha',
+    passwordPlaceholder: 'Digite sua senha',
+    submitButton: 'Entrar',
+    signingIn: 'Entrando...',
+    rememberMe: 'Lembrar de mim',
+    forgotPassword: 'Esqueceu sua senha?',
+    noAccount: 'Não tem uma conta?',
+    signUp: 'Criar conta',
+  },
+
+  // Signup form
+  signup: {
+    title: 'Criar Nova Conta',
+    subtitle: 'Crie sua conta para começar a otimizar currículos',
+    email: 'Email',
+    emailPlaceholder: 'seu@email.com',
+    password: 'Senha',
+    passwordPlaceholder: 'Crie uma senha forte',
+    confirmPassword: 'Confirmar Senha',
+    confirmPasswordPlaceholder: 'Digite a senha novamente',
+    fullName: 'Nome Completo',
+    fullNamePlaceholder: 'Seu nome completo',
+    submitButton: 'Criar Conta',
+    creatingAccount: 'Criando conta...',
+    hasAccount: 'Já tem uma conta?',
+    signIn: 'Entrar',
+
+    // Validation messages
+    allFieldsRequired: 'Todos os campos são obrigatórios',
+    passwordTooShort: 'A senha deve ter pelo menos 8 caracteres',
+    passwordsDoNotMatch: 'As senhas não coincidem',
+    invalidEmail: 'Email inválido',
+
+    // Success messages
+    successTitle: 'Conta Criada com Sucesso!',
+    successMessage: 'Sua conta foi criada. Verifique seu email para confirmar.',
+    redirectingToLogin: 'Redirecionando para a página de login...',
+
+    // Password requirements
+    passwordRequirements: 'Requisitos de senha:',
+    requirementLength: 'Pelo menos 8 caracteres',
+    requirementUppercase: 'Pelo menos uma letra maiúscula',
+    requirementLowercase: 'Pelo menos uma letra minúscula',
+    requirementNumber: 'Pelo menos um número',
+  },
+
+  // Forgot password form
+  forgotPassword: {
+    title: 'Recuperar Senha',
+    subtitle: 'Digite seu email para receber instruções de recuperação',
+    emailLabel: 'Email',
+    emailPlaceholder: 'seu@email.com',
+    submitButton: 'Enviar Email de Recuperação',
+    sendingEmail: 'Enviando email...',
+    emailRequired: 'Email é obrigatório',
+    invalidEmail: 'Email inválido',
+    rememberPassword: 'Lembrou sua senha?',
+    backToLogin: 'Voltar para Login',
+
+    // Success messages
+    successTitle: 'Email Enviado!',
+    successMessage: 'Enviamos instruções de recuperação para seu email.',
+    checkEmail: 'Verifique sua caixa de entrada e siga as instruções.',
+  },
+
+  // Reset password form
+  resetPassword: {
+    title: 'Redefinir Senha',
+    subtitle: 'Crie uma nova senha para sua conta',
+    newPassword: 'Nova Senha',
+    newPasswordPlaceholder: 'Digite sua nova senha',
+    confirmNewPassword: 'Confirmar Nova Senha',
+    confirmNewPasswordPlaceholder: 'Digite a nova senha novamente',
+    submitButton: 'Redefinir Senha',
+    resettingPassword: 'Redefinindo senha...',
+    allFieldsRequired: 'Todos os campos são obrigatórios',
+    passwordTooShort: 'A senha deve ter pelo menos 8 caracteres',
+    passwordsDoNotMatch: 'As senhas não coincidem',
+    invalidLink: 'Link de redefinição inválido ou expirado',
+
+    // Success messages
+    successTitle: 'Senha Redefinida!',
+    successMessage: 'Sua senha foi redefinida com sucesso.',
+    redirectingToLogin: 'Redirecionando para a página de login...',
+
+    // Password requirements
+    passwordRequirements: 'Requisitos de senha:',
+    requirementLength: 'Pelo menos 8 caracteres',
+    requirementUppercase: 'Pelo menos uma letra maiúscula',
+    requirementLowercase: 'Pelo menos uma letra minúscula',
+    requirementNumber: 'Pelo menos um número',
+  },
+
+  // General auth messages
+  error: {
+    invalidCredentials: 'Email ou senha incorretos',
+    sessionExpired: 'Sua sessão expirou. Faça login novamente.',
+    accountNotVerified: 'Sua conta não foi verificada. Verifique seu email.',
+    accountLocked: 'Sua conta está bloqueada. Entre em contato com suporte.',
+    networkError: 'Erro de conexão. Verifique sua internet.',
+    serverError: 'Erro no servidor. Tente novamente.',
+    emailAlreadyExists: 'Este email já está cadastrado.',
+    weakPassword: 'Senha muito fraca. Escolha uma senha mais forte.',
+  },
+
+  success: {
+    loginSuccess: 'Login realizado com sucesso!',
+    logoutSuccess: 'Você saiu da sua conta.',
+    profileUpdated: 'Perfil atualizado com sucesso!',
+    emailVerified: 'Email verificado com sucesso!',
+  },
+} as const;
+
+/**
  * Upload feature translations
  */
 export const upload = {
@@ -87,6 +210,30 @@ export const nav = {
 } as const;
 
 /**
+ * Dashboard translations
+ */
+export const dashboard = {
+  title: 'Dashboard',
+  subtitle: 'Bem-vindo ao seu painel de otimização de currículos',
+  welcome: 'Bem-vindo ao seu Dashboard!',
+  description: 'Este é um dashboard protegido. Apenas usuários autenticados podem ver isto.',
+  quickActions: 'Ações Rápidas',
+  uploadResume: 'Enviar Currículo',
+  uploadResumeDesc: 'Comece a otimizar seu currículo enviando-o.',
+  viewOptimizations: 'Ver Otimizações',
+  viewOptimizationsDesc: 'Veja suas otimizações de currículo anteriores.',
+  profileSettings: 'Configurações do Perfil',
+  profileSettingsDesc: 'Gerencie as configurações da sua conta.',
+  accountInfo: 'Informações da Conta',
+  userId: 'ID do Usuário',
+  email: 'Email',
+  lastSignIn: 'Último Login',
+  accountCreated: 'Data de Criação',
+  never: 'Nunca',
+  unknown: 'Desconhecido',
+} as const;
+
+/**
  * Common UI translations
  */
 export const common = {
@@ -117,7 +264,7 @@ export const common = {
 export const errors = {
   required: 'Este campo é obrigatório',
   invalidEmail: 'Email inválido',
-  passwordTooShort: 'A senha deve ter no mínimo 6 caracteres',
+  passwordTooShort: 'A senha deve ter no mínimo 8 caracteres',
   passwordMismatch: 'As senhas não coincidem',
   networkError: 'Erro de conexão. Verifique sua internet e tente novamente.',
   unauthorized: 'Você precisa estar autenticado para acessar esta página.',
@@ -131,11 +278,13 @@ export const errors = {
  * Combined translations object for convenience
  */
 export const translations = {
+  auth,
   upload,
   jobDescription,
   payment,
   results,
   nav,
+  dashboard,
   common,
   errors,
 } as const;
